@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Номерок — тестовый билд</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#000;color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;min-height:100vh}
+button{font:inherit;border:0;color:inherit;cursor:pointer}
+.app{max-width:500px;min-height:100vh;margin:auto;background:#050505;padding-bottom:98px}
+.top{padding:18px 18px 10px}
+.header{display:flex;align-items:center;gap:10px}.menu{width:58px;height:58px;border-radius:50%;background:#1c1c1f;display:grid;place-items:center;font-size:27px}
+.titleWrap{flex:1;min-width:0}.title{font-size:22px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.subtitle{color:#888;font-size:13px;font-weight:700;margin-top:2px}
+.dots{width:44px;height:44px;border:2px solid #ddd;border-radius:50%;background:#090909;font-size:21px}
+.stats{display:flex;align-items:center;gap:8px;margin-top:15px}.pill{background:#1b1b1e;border-radius:30px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-weight:800}.xpbar{width:62px;height:8px;background:#36363a;border-radius:8px;overflow:hidden}.xpbar i{display:block;height:100%;background:#39d26f;border-radius:8px;width:35%}
+.luck{font-size:21px}.balance{margin-left:auto;text-align:right}.balance small{display:block;color:#777;font-size:11px}.balance b{font-size:23px}
+.tabs{display:flex;background:#1a1a1d;border:3px solid #242427;border-radius:20px;padding:2px;margin:12px 18px 0}.tab{flex:1;background:transparent;padding:13px;border-radius:15px;color:#8e8e94;font-weight:850;font-size:17px}.tab.active{background:#656569;color:white}
+.content{padding:0 18px}.offer{margin-top:20px;border:1px solid #8b173d;background:linear-gradient(100deg,#301021,#1c0d18);border-radius:18px;padding:13px 15px;display:flex;align-items:center;gap:12px}.offerIcon{width:50px;height:50px;border-radius:15px;background:#ff2d62;display:grid;place-items:center;font-size:27px}.offer b{font-size:18px}.offer span{color:#aaa;font-size:12px}.section{margin:24px 4px 11px;font-size:19px;font-weight:850}
+.pack{background:#18181b;border-radius:20px;margin:10px 0;padding:16px;border:1px solid #252529}.packTop{display:flex;justify-content:space-between;align-items:start}.packName{font-size:18px;font-weight:850}.packDesc{color:#818188;font-size:12px;line-height:1.35;margin-top:4px;max-width:280px}.packPrice{font-weight:900;font-size:17px}.openBtn{width:100%;background:#32d45d;color:#061109;border-radius:15px;padding:15px;margin-top:13px;font-weight:900;font-size:16px}.pack.common{border-color:#29292d}.pack.rare{border-color:#245e8b}.pack.epic{border-color:#7136a0}.pack.legendary{border-color:#9c771e}
+.resultBox{margin-top:20px;text-align:center;background:radial-gradient(circle,#242428 0,#0b0b0c 58%,#000 75%);border-radius:28px;padding:20px 8px 25px;min-height:440px;display:flex;flex-direction:column;align-items:center;justify-content:center}.rarity{display:inline-block;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.5px}.common{background:#333;color:#ccc}.rare{background:#153c58;color:#6fc8ff}.epic{background:#38204c;color:#d19aff}.legendary{background:#473915;color:#ffd75a}.unique{background:linear-gradient(90deg,#ffd65c,#fff1a4,#ffd65c);color:#17120a}
+.plate{background:#f3f3ef;color:#101010;border-radius:8px;border:3px solid #111;box-shadow:0 0 0 2px #eee,0 10px 25px #000;min-width:315px;padding:10px 13px;font:900 31px/1 monospace;letter-spacing:2px;margin:18px 0 13px}.region{color:#777;font-weight:750;font-size:14px}.findings{margin-top:13px;font-size:17px;font-weight:850;line-height:1.65}.finding{color:#e5e5e7}.price{margin-top:18px;color:#777}.price b{color:#fff;font-size:19px}.actionRow{display:flex;gap:9px;margin-top:18px}.action{background:#1c1c20;border-radius:15px;padding:13px 17px;font-weight:850}.action.green{background:#2fd35b;color:#061109}.bigSpin{width:100%;margin-top:18px;background:#31d65c;color:#051108;border-radius:17px;padding:17px;font-size:19px;font-weight:950;box-shadow:0 8px 28px #21c84b22}.cool{opacity:.55;pointer-events:none}
+.card{background:#17171a;border:1px solid #27272b;border-radius:18px;padding:13px;margin:10px 0}.miniPlate{background:#f1f1ed;color:#111;border-radius:6px;text-align:center;padding:9px;font:900 22px monospace;letter-spacing:1px}.row{display:flex;justify-content:space-between;align-items:center;margin-top:9px}.muted{color:#85858b;font-size:12px}.sell{margin-top:10px;width:100%;background:#242429;border-radius:12px;padding:11px;font-weight:800}.garageCar{display:flex;gap:12px;align-items:center}.carIcon{width:78px;height:58px;border-radius:14px;background:linear-gradient(145deg,#38404b,#16181c);display:grid;place-items:center;font-size:36px}.empty{text-align:center;color:#777;padding:60px 20px}
+.bottom{position:fixed;bottom:0;left:0;right:0;max-width:500px;margin:auto;background:rgba(9,9,10,.96);backdrop-filter:blur(16px);border-top:1px solid #222;padding:10px 15px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:20}.nav{flex:1;background:transparent;color:#777;font-size:11px;font-weight:800;padding:5px}.nav.active{color:white}
+.toast{position:fixed;top:20px;left:50%;transform:translate(-50%,-120px);background:#27272b;border:1px solid #414148;border-radius:14px;padding:12px 17px;z-index:50;font-size:13px;font-weight:750;transition:.25s}.toast.show{transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;background:#000;z-index:40;display:none;overflow:auto}.modal.show{display:block}.modalTop{padding:18px;display:flex;justify-content:space-between}.close{background:#1b1b1e;border-radius:50%;width:42px;height:42px;font-size:20px}.modal .content{padding-bottom:40px}
+.spinAnim{animation:spin .75s ease-in-out}@keyframes spin{0%{transform:scale(.9) rotate(-1deg);filter:brightness(.7)}45%{transform:scale(1.03) rotate(1deg);filter:brightness(1.7)}100%{transform:scale(1);filter:brightness(1)}}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <div class="top">
+    <div class="header">
+      <button class="menu" id="menuBtn">☰</button>
+      <div class="titleWrap"><div class="title">Номерок | Генератор номеров</div><div class="subtitle">коллекционер • сезон 1</div></div>
+      <button class="dots" id="versionBtn">•••</button>
+    </div>
+    <div class="stats">
+      <div class="pill">Ур. <span id="level">1</span><span class="xpbar"><i id="xpbar"></i></span></div>
+      <div class="pill luck">🍀 <span id="luck">1</span></div>
+      <div class="balance"><small>Баланс</small><b id="money">500 000 ₽</b></div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button id="numbersTab" class="tab active">Номера</button>
+    <button id="carsTab" class="tab">Машины</button>
+  </div>
+  <div id="content" class="content"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+<div class="bottom">
+  <button id="navRoll" class="nav active">🎰<br>Крутить</button>
+  <button id="navInv" class="nav">🔢<br>Хранилище</button>
+  <button id="navMarket" class="nav">💰<br>Рынок</button>
+  <button id="navBoxes" class="nav">📦<br>Контейнеры</button>
+  <button id="navGarage" class="nav">🚘<br>Гараж</button>
+</div>
+<div id="modal" class="modalNew"><div class="sheetNew" id="modalContent"></div></div>
+<script>
+(function(){
+  function showBootError(title, detail){
+    try{
+      document.body.innerHTML = '<div style="min-height:100vh;background:#080808;color:#fff;padding:28px 18px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"><h2 style="margin:0 0 12px">Номерок не запустился</h2><div style="color:#ff6b7a;font-weight:800;margin-bottom:10px">'+String(title).replace(/[&<>]/g,function(x){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[x]})+'</div><pre style="white-space:pre-wrap;color:#aaa;font-size:12px">'+String(detail||'').replace(/[&<>]/g,function(x){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[x]})+'</pre><p style="color:#777;font-size:12px">Сделай скрин этого экрана и отправь его мне.</p></div>';
+    }catch(e){}
+  }
+  window.__nomerokBootError=showBootError;
+  window.addEventListener('error',function(e){showBootError('JavaScript error', (e.message||'')+'\nСтрока: '+(e.lineno||'?')+'\nФайл: '+(e.filename||'?'));});
+  window.addEventListener('unhandledrejection',function(e){showBootError('Необработанная ошибка', e.reason&&e.reason.stack?e.reason.stack:String(e.reason||''));});
+})();
+</script>
+<script>
+'use strict';
+
+const COST=5000;
+const LETTERS=['А','В','Е','К','М','Н','О','Р','С','Т','У','Х'];
+const REGIONS=[
+['77','Москва'],['97','Москва'],['99','Москва'],['177','Москва'],['197','Москва'],['199','Москва'],['777','Москва'],
+['78','Санкт-Петербург'],['98','Санкт-Петербург'],['178','Санкт-Петербург'],['198','Санкт-Петербург'],
+['50','Московская область'],['90','Московская область'],['150','Московская область'],['190','Московская область'],
+['23','Краснодарский край'],['93','Краснодарский край'],['123','Краснодарский край'],['193','Краснодарский край'],
+['52','Нижегородская область'],['152','Нижегородская область'],['54','Новосибирская область'],['154','Новосибирская область'],
+['66','Свердловская область'],['96','Свердловская область'],['196','Свердловская область'],['16','Татарстан'],['116','Татарстан'],
+['61','Ростовская область'],['161','Ростовская область'],['62','Рязанская область'],['67','Смоленская область'],['40','Калужская область'],
+['43','Кировская область'],['46','Курская область'],['48','Липецкая область'],['55','Омская область'],['63','Самарская область'],
+['163','Самарская область'],['64','Саратовская область'],['72','Тюменская область'],['74','Челябинская область'],['174','Челябинская область'],
+['95','Чеченская Республика'],['26','Ставропольский край'],['42','Кемеровская область'],['70','Томская область'],['71','Тульская область'],
+['86','ХМАО'],['89','ЯНАО']
+];
+
+const CARS=[
+{name:'Lada Granta Sport',icon:'🚗',rarity:'Обычная',price:420000,cls:'Street',power:106,speed:180,handling:72},
+{name:'Lada Vesta Sport',icon:'🏎️',rarity:'Редкая',price:980000,cls:'Sport',power:145,speed:198,handling:82},
+{name:'Toyota Supra',icon:'🏁',rarity:'Эпическая',price:5200000,cls:'Sport',power:387,speed:250,handling:91},
+{name:'BMW M4',icon:'🚙',rarity:'Эпическая',price:6400000,cls:'Sport',power:510,speed:280,handling:93},
+{name:'Nissan GT-R',icon:'🚘',rarity:'Легендарная',price:9800000,cls:'Supercar',power:570,speed:315,handling:95},
+{name:'Porsche 911',icon:'🏎️',rarity:'Легендарная',price:12400000,cls:'Supercar',power:650,speed:320,handling:97},
+{name:'Lamborghini Huracán',icon:'🟨',rarity:'Уникальная',price:18500000,cls:'Supercar',power:640,speed:325,handling:98},
+{name:'Mercedes-AMG GT',icon:'🚘',rarity:'Легендарная',price:10900000,cls:'Supercar',power:585,speed:318,handling:96}
+];
+
+const BOXES=[
+{name:'Гаражный',icon:'📦',rarity:'Обычная',price:80000,ids:[0,0,0,1],desc:'стартовые машины'},
+{name:'Спортивный',icon:'🎁',rarity:'Редкая',price:450000,ids:[0,1,1,2,3],desc:'спорт и редкие модели'},
+{name:'Премиум',icon:'💎',rarity:'Эпическая',price:2000000,ids:[1,2,2,3,4,5,6,7],desc:'дорогие автомобили'}
+];
+
+const TRADERS=[
+{name:'Максим Коллекционер',icon:'🧑‍💼',desc:'три одинаковые цифры',mult:1.8,match:p=>new Set(p.digits).size===1},
+{name:'Илья Москва',icon:'🏙️',desc:'московские регионы',mult:1.55,match:p=>['77','97','99','177','197','199','777'].indexOf(p.region)>=0},
+{name:'Артём Зеркало',icon:'🪞',desc:'зеркальные комбинации',mult:1.7,match:p=>p.digits[0]===p.digits[2]||p.letters[0]===p.letters[2]},
+{name:'Денис Спорт',icon:'🏎️',desc:'007, 123 и 321',mult:1.9,match:p=>['007','123','321'].indexOf(p.digits.join(''))>=0},
+{name:'Сергей Серия',icon:'🔤',desc:'одинаковые буквы',mult:1.75,match:p=>new Set(p.letters).size===1}
+];
+
+const EVENTS=[
+{name:'Неделя красивых номеров',icon:'🔥',desc:'красивые комбинации ценятся выше',kind:'beauty'},
+{name:'Неделя Москвы',icon:'🏙️',desc:'московские регионы встречаются чаще',kind:'moscow'},
+{name:'Неделя спорта',icon:'🏎️',desc:'007, 123 и 321 получают бонус',kind:'sport'},
+{name:'Неделя зеркал',icon:'🪞',desc:'зеркальные цифры и буквы получают бонус',kind:'mirror'}
+];
+
+const COLLECTIONS=[
+{id:'sevens',icon:'7️⃣',name:'Три семёрки',desc:'собери 3 номера 777',reward:50000,check:s=>s.plates.filter(p=>p.digits.join('')==='777').length>=3},
+{id:'mirrors',icon:'🪞',name:'Зеркала',desc:'собери 5 зеркальных номеров',reward:75000,check:s=>s.plates.filter(p=>p.digits[0]===p.digits[2]||p.letters[0]===p.letters[2]).length>=5},
+{id:'moscow',icon:'🏙️',name:'Москва',desc:'открой 7 московских регионов',reward:100000,check:s=>s.regions.filter(r=>['77','97','99','177','197','199','777'].indexOf(r)>=0).length>=7},
+{id:'seq',icon:'🔢',name:'Последовательности',desc:'собери 4 номера 001, 007, 123 или 321',reward:60000,check:s=>s.plates.filter(p=>['001','007','123','321'].indexOf(p.digits.join(''))>=0).length>=4}
+];
+
+const DEFAULT={
+money:500000,level:1,xp:0,luck:1,keys:3,page:'roll',main:'numbers',
+plates:[],cars:[],last:null,regions:[],storageMax:20,garageMax:6,
+luckBoost:0,luckBoostSpins:0,stats:{spins:0,sold:0,spent:0,earned:0,bestValue:0,bestText:'—',bestRarity:'—'},
+daily:{date:'',claimed:false},claims:{},marketSold:0
+};
+
+function copy(o){return JSON.parse(JSON.stringify(o))}
+function load(){
+  let s=null;
+  try{s=JSON.parse(localStorage.getItem('nomerok_github_v3')||'null')}catch(e){}
+  s=Object.assign(copy(DEFAULT),s||{});
+  s.stats=Object.assign(copy(DEFAULT.stats),s.stats||{});
+  s.daily=Object.assign(copy(DEFAULT.daily),s.daily||{});
+  s.claims=s.claims||{};
+  s.plates=Array.isArray(s.plates)?s.plates:[];
+  s.cars=Array.isArray(s.cars)?s.cars:[];
+  s.regions=Array.isArray(s.regions)?s.regions:[];
+  return s;
+}
+let S=load(), rolling=false;
+
+function save(){try{localStorage.setItem('nomerok_github_v3',JSON.stringify(S))}catch(e){}updateTop()}
+function money(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function esc(s){return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+function today(){return new Date().toISOString().slice(0,10)}
+function trader(){let x=today().replace(/-/g,''),n=0;for(let i=0;i<x.length;i++)n=(n*31+x.charCodeAt(i))%TRADERS.length;return TRADERS[n]}
+function event(){let x=today().replace(/-/g,''),n=0;for(let i=0;i<x.length;i++)n=(n*17+x.charCodeAt(i))%EVENTS.length;return EVENTS[n]}
+function ensureDaily(){if(S.daily.date!==today()){S.daily={date:today(),claimed:false};save()}}
+function toast(t){let x=document.getElementById('toast');x.textContent=t;x.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(function(){x.classList.remove('show')},1700)}
+function xp(n){S.xp+=n;while(S.xp>=100){S.xp-=100;S.level++;S.keys++;toast('Новый уровень! +1 🔑')}}
+function updateTop(){document.getElementById('money').textContent=money(S.money);document.getElementById('level').textContent=S.level;document.getElementById('luck').textContent=S.luck;document.getElementById('xpbar').style.width=Math.min(100,S.xp)+'%'}
+function rarityClass(r){return {'Обычная':'r-common','Редкая':'r-rare','Эпическая':'r-epic','Легендарная':'r-legendary','Уникальная':'r-unique'}[r]||'r-common'}
+
+function findings(letters,digits,region){
+  let f=[],d=digits.join(''),dc={},lc={};
+  digits.forEach(x=>dc[x]=(dc[x]||0)+1);letters.forEach(x=>lc[x]=(lc[x]||0)+1);
+  Object.keys(dc).forEach(x=>{if(dc[x]===3)f.push(['Три '+x,18]);else if(dc[x]===2)f.push(['Две '+x,2.5])});
+  Object.keys(lc).forEach(x=>{if(lc[x]===3)f.push(['Три '+x,14]);else if(lc[x]===2)f.push(['Две '+x,2])});
+  if(d==='001')f.push(['Начальные нули',7]);if(d==='007')f.push(['Комбинация 007',10]);
+  if(d==='123'||d==='321')f.push(['Последовательность '+d,8]);
+  if(digits[0]===digits[2]&&digits[0]!==digits[1])f.push(['Зеркальные цифры',4]);
+  if(letters[0]===letters[2]&&letters[0]!==letters[1])f.push(['Зеркальные буквы',3]);
+  if(['77','97','99','177','197','199','777'].indexOf(region)>=0)f.push(['Москва',1.2]);
+  if(region.length===3)f.push(['Трёхзначный регион',1.12]);
+  return f;
+}
+function generate(){
+  let digits=[0,1,2].map(function(){return Math.floor(Math.random()*10)});
+  let letters=[0,1,2].map(function(){return pick(LETTERS)});
+  let r=pick(REGIONS),d=digits.join(''),f=findings(letters,digits,r[0]),mult=1;
+  f.forEach(x=>{mult*=x[1]});
+  let ev=event();
+  if(ev.kind==='beauty'&&['777','001','007','123','321'].indexOf(d)>=0)mult*=1.22;
+  if(ev.kind==='moscow'&&['77','97','99','177','197','199','777'].indexOf(r[0])>=0)mult*=1.2;
+  if(ev.kind==='sport'&&['007','123','321'].indexOf(d)>=0)mult*=1.15;
+  if(ev.kind==='mirror'&&(digits[0]===digits[2]||letters[0]===letters[2]))mult*=1.22;
+  let luck=S.luck-1+(S.luckBoostSpins>0?S.luckBoost:0),q=Math.random(),rarity='Обычная';
+  if(q<0.0005+luck*.00025)rarity='Уникальная';
+  else if(q<0.004+luck*.0012)rarity='Легендарная';
+  else if(q<0.035+luck*.006)rarity='Эпическая';
+  else if(q<0.16+luck*.015)rarity='Редкая';
+  let base={'Обычная':700,'Редкая':3500,'Эпическая':18000,'Легендарная':90000,'Уникальная':1000000}[rarity];
+  return {id:Date.now()+Math.random(),letters:letters,digits:digits,region:r[0],regionName:r[1],rarity:rarity,value:Math.max(100,Math.round(base*mult)),findings:f.map(function(x){return x[0]}),text:letters[0]+d+letters[1]+letters[2]};
+}
+function plate(p){
+ return '<div class="plateNew"><div class="plateChars">'+esc(p.letters[0])+esc(p.digits.join(''))+esc(p.letters[1])+esc(p.letters[2])+'</div><div class="plateRegion"><strong>'+esc(p.region)+'</strong><div class="rus">RUS <i class="flag"></i></div></div></div>';
+}
+function info(p){
+ return '<div class="region">Регион '+esc(p.region)+' · '+esc(p.regionName)+'</div>'+
+ '<div style="margin-top:7px">'+(p.findings.length?p.findings.map(function(x){return '<span class="reason">'+esc(x)+'</span>'}).join(''):'<span class="reason">обычная комбинация</span>')+'</div>'+
+ '<div class="valueBig">'+money(p.value)+'</div><span class="rarityBig '+rarityClass(p.rarity)+'">'+esc(p.rarity)+'</span>';
+}
+function spin(){
+  if(rolling||S.money<COST){if(S.money<COST)toast('Недостаточно виртуальных ₽');return}
+  S.money-=COST;S.stats.spent+=COST;S.stats.spins++;save();rolling=true;render();
+  let n=0,timer=setInterval(function(){
+    let el=document.getElementById('rolling');
+    if(el){let q=generate();el.innerHTML=plate(q)+info(q)}
+    n++;
+    if(n>=17){
+      clearInterval(timer);let p=generate();S.last=p;S.stats.bestValue=Math.max(S.stats.bestValue,p.value);if(p.value===S.stats.bestValue){S.stats.bestText=p.text+' '+p.region;S.stats.bestRarity=p.rarity}
+      if(!S.regions.includes(p.region))S.regions.push(p.region);xp(p.rarity==='Уникальная'?45:p.rarity==='Легендарная'?32:p.rarity==='Эпическая'?20:p.rarity==='Редкая'?12:5);
+      if(S.luckBoostSpins>0){S.luckBoostSpins--;if(!S.luckBoostSpins)S.luckBoost=0}
+      S.plates.unshift(p);S.plates=S.plates.slice(0,S.storageMax);S.last=p;save();rolling=false;render();toast('Номер выпал!');
+    }
+  },75);
+}
+function storeLast(){if(!S.last)return;if(S.plates.length>S.storageMax){toast('Хранилище заполнено');return}toast('Номер уже в хранилище');}
+function sellLast(){if(!S.last)return;let i=S.plates.findIndex(function(x){return x.id===S.last.id});if(i<0)return;let v=S.last.value;S.money+=v;S.stats.sold++;S.stats.earned+=v;S.plates.splice(i,1);S.last=null;save();render();toast('Продано за '+money(v))}
+function sellPlate(id){let i=S.plates.findIndex(function(x){return String(x.id)===String(id)});if(i<0)return;let p=S.plates[i];S.money+=p.value;S.stats.sold++;S.stats.earned+=p.value;S.plates.splice(i,1);if(S.last&&S.last.id===p.id)S.last=null;save();render();toast('Продано за '+money(p.value))}
+function marketMult(p){let m=1,t=trader();if(t.match(p))m=t.mult;if(p.digits.join('')==='777')m=Math.max(m,1.55);if(['001','007','123','321'].indexOf(p.digits.join(''))>=0)m=Math.max(m,1.6);return m}
+function marketSell(id){let i=S.plates.findIndex(function(x){return String(x.id)===String(id)});if(i<0)return;let p=S.plates[i],v=Math.round(p.value*marketMult(p));S.money+=v;S.stats.sold++;S.stats.earned+=v;S.marketSold++;S.plates.splice(i,1);save();render();toast('NPC купил за '+money(v))}
+function openBox(i){
+  let b=BOXES[i];if(S.money<b.price){toast('Не хватает виртуальных ₽');return}if(S.cars.length>=S.garageMax){toast('Гараж заполнен');return}
+  S.money-=b.price;S.stats.spent+=b.price;let c=CARS[pick(b.ids)],car=Object.assign({},c,{id:Date.now()+Math.random()});S.cars.unshift(car);xp(i===2?30:i===1?18:10);save();modal('<h2>'+b.icon+' '+esc(b.name)+'</h2><div class="carNew"><div class="carEmoji">'+c.icon+'</div><h3>'+esc(c.name)+'</h3><div class="carMeta">'+esc(c.rarity)+' · '+esc(c.cls)+'<br>'+c.power+' л.с. · '+c.speed+' км/ч · управление '+c.handling+'</div><div style="font-size:16px;font-weight:900;margin-top:7px">'+money(c.price)+'</div></div><button class="closeNew" id="closeModal">Забрать</button>');render()
+}
+function daily(){
+  ensureDaily();if(S.daily.claimed){toast('Бонус уже получен');return}S.daily.claimed=true;S.money+=15000;S.keys++;xp(10);save();render();toast('+15 000 ₽ и +1 🔑')
+}
+function claim(id){
+  let c=COLLECTIONS.find(function(x){return x.id===id});if(!c||S.claims[id]||!c.check(S))return;S.claims[id]=true;S.money+=c.reward;if(id==='sevens'){S.luckBoost=1;S.luckBoostSpins=10}save();render();toast('Коллекция завершена!')
+}
+function setPage(p){S.page=p;save();render();window.scrollTo(0,0)}
+function setMain(m){S.main=m;save();render()}
+function modal(s){document.getElementById('modalContent').innerHTML=s;document.getElementById('modal').classList.add('show');let b=document.getElementById('closeModal');if(b)b.onclick=closeModal}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function navActive(){let map={roll:'Roll',inv:'Inv',market:'Market',boxes:'Boxes',garage:'Garage'};['roll','inv','market','boxes','garage'].forEach(function(x){document.getElementById('nav'+map[x]).classList.toggle('active',S.page===x)})}
+
+function rollView(){
+  ensureDaily();let e=event(),t=trader(),p=S.last;
+  return '<div class="eventNew"><div class="eventIconNew">'+e.icon+'</div><div><b>'+esc(e.name)+'</b><span>'+esc(e.desc)+' · Трейдер дня: '+esc(t.name)+' ×'+t.mult.toFixed(2)+'</span></div></div>'+
+  '<div class="hero"><div class="heroTitle">ТВОЙ ПОСЛЕДНИЙ НОМЕР</div><div class="balanceBig">Баланс <b>'+money(S.money)+'</b></div>'+
+  '<div id="rolling">'+(p?plate(p)+info(p):'<div class="empty">Готов к новой находке.<br>Все номера идут из одного общего случайного пула.</div>')+'</div>'+
+  (p?'<div class="two"><button class="actionBtn green" id="keepBtn">🗃️ В хранилище</button><button class="actionBtn red" id="sellLastBtn">💰 Продать</button></div>':'')+
+  '<button class="mainSpin" id="spinBtn" '+(rolling||S.money<COST?'disabled':'')+'>'+ (rolling?'Прокрутка…':'Крутить — 5 000 ₽')+'</button><div style="font-size:9px;color:#777;margin-top:6px">Валюта полностью виртуальная</div></div>'+
+  '<div class="blockTitle">Что влияет на цену</div><div class="grid2"><div class="tile"><b>🔢 Цифры</b><p>777, 001, 007, 123, 321, повторы и зеркала.</p></div><div class="tile"><b>🔤 Буквы</b><p>Одинаковые и зеркальные серии повышают ценность.</p></div><div class="tile"><b>📍 Регион</b><p>Москва и трёхзначные регионы дают дополнительный множитель.</p></div><div class="tile"><b>💎 Редкость</b><p>Обычная → Редкая → Эпическая → Легендарная → Уникальная.</p></div></div>'+
+  '<div class="blockTitle">Ежедневный бонус</div><div class="storageCard"><div class="row" style="margin:0"><div><b>🎁 15 000 ₽ + 1 🔑</b><div class="muted">Раз в день</div></div><button class="actionBtn green" id="dailyBtn" '+(S.daily.claimed?'disabled':'')+'>'+(S.daily.claimed?'Получен':'Забрать')+'</button></div></div>';
+}
+function invView(){
+  let html='<div class="blockTitle">Хранилище · '+S.plates.length+'/'+S.storageMax+'</div>';
+  if(!S.plates.length)html+='<div class="empty">Здесь будут сохранённые номера.</div>';
+  else S.plates.forEach(function(p){html+='<div class="storageCard">'+plate(p)+info(p)+'<div class="two"><button class="actionBtn blue" data-market="'+p.id+'">🏪 Рынок · '+money(Math.round(p.value*marketMult(p)))+'</button><button class="actionBtn red" data-sell="'+p.id+'">Продать · '+money(p.value)+'</button></div></div>'});
+  html+='<div class="blockTitle">Альбом регионов · '+S.regions.length+'/'+REGIONS.length+'</div><div class="albumNew">'+REGIONS.map(function(r){return '<div class="regTile '+(S.regions.includes(r[0])?'done':'')+'"><b>'+r[0]+'</b>'+(S.regions.includes(r[0])?'✓':'?')+'</div>'}).join('')+'</div>';
+  html+='<div class="blockTitle">Коллекции</div>'+COLLECTIONS.map(function(c){let ok=c.check(S),done=!!S.claims[c.id];return '<div class="questNew"><div class="qicon">'+c.icon+'</div><div><b>'+c.name+'</b><span>'+c.desc+' · '+money(c.reward)+'</span></div><button class="'+(ok&&!done?'ok':'')+'" data-claim="'+c.id+'" '+(done||!ok?'disabled':'')+'>'+(done?'✓':ok?'Забрать':'—')+'</button></div>'}).join('');
+  return html;
+}
+function marketView(){
+  let t=trader(),html='<div class="blockTitle">Рынок</div><div class="storageCard"><b>'+t.icon+' Трейдер дня: '+esc(t.name)+'</b><div class="muted">Ищет: '+esc(t.desc)+' · множитель до ×'+t.mult.toFixed(2)+'</div></div>';
+  if(!S.plates.length)html+='<div class="empty">Нет номеров для продажи.</div>';
+  else S.plates.forEach(function(p){let v=Math.round(p.value*marketMult(p));html+='<div class="storageCard"><div class="row" style="margin:0"><b>'+esc(p.text)+'</b><span class="marketTag">×'+marketMult(p).toFixed(2)+'</span></div><div class="muted">Регион '+p.region+' · '+p.rarity+'</div><div style="font-size:17px;font-weight:900;margin-top:6px">'+money(v)+'</div><button class="actionBtn green" style="width:100%;margin-top:8px" data-market="'+p.id+'">Продать NPC</button></div>'});
+  return html;
+}
+function boxesView(){
+  return '<div class="blockTitle">Контейнеры</div><div class="muted">Автомобили выпадают только из контейнеров. Всё за виртуальные ₽.</div><div class="grid2" style="margin-top:9px">'+BOXES.map(function(b,i){return '<div class="containerNew"><div class="emoji">'+b.icon+'</div><h3>'+b.name+'</h3><p>'+b.desc+'<br>'+b.rarity+'</p><strong>'+money(b.price)+'</strong><button data-box="'+i+'" '+(S.money<b.price||S.cars.length>=S.garageMax?'disabled':'')+'>'+(S.cars.length>=S.garageMax?'Нет места':S.money<b.price?'Не хватает':'Открыть')+'</button></div>'}).join('')+'</div>';
+}
+function garageView(){
+  let html='<div class="blockTitle">Гараж · '+S.cars.length+'/'+S.garageMax+'</div>';
+  html+=S.cars.length?'<div class="grid2">'+S.cars.map(function(c){return '<div class="carNew"><div class="carEmoji">'+c.icon+'</div><h3>'+esc(c.name)+'</h3><div class="carMeta">'+esc(c.rarity)+' · '+esc(c.cls)+'<br>'+c.power+' л.с. · '+c.speed+' км/ч<br>Управление: '+c.handling+'</div><div style="font-size:14px;font-weight:900;margin-top:6px">'+money(c.price)+'</div></div>'}).join('')+'</div>':'<div class="empty">Гараж пуст.<br>Открывай контейнеры.</div>';
+  return html+'<div class="blockTitle">Все модели</div><div class="grid2">'+CARS.map(function(c){return '<div class="carNew"><div class="carEmoji">'+c.icon+'</div><h3>'+esc(c.name)+'</h3><div class="carMeta">'+c.rarity+' · '+c.cls+'<br>'+c.power+' л.с. · '+c.speed+' км/ч</div></div>'}).join('')+'</div>';
+}
+function profileView(){
+  let html='<div class="blockTitle">Профиль</div><div class="storageCard">';
+  [['Уровень',S.level],['Опыт',S.xp+'/100 XP'],['Прокруток',S.stats.spins],['Потрачено',money(S.stats.spent)],['Заработано',money(S.stats.earned)],['Продано',S.stats.sold],['Лучший номер',S.stats.bestText],['Лучшая редкость',S.stats.bestRarity]].forEach(function(x){html+='<div class="statLine"><b>'+x[0]+'</b><span>'+esc(x[1])+'</span></div>'});
+  html+='</div><div class="blockTitle">Удача</div><div class="storageCard"><div class="statLine"><b>🍀 Уровень удачи</b><span>'+S.luck+'/5</span></div><button class="actionBtn green" id="luckBtn" '+(S.luck>=5?'disabled':'')+'>Повысить за '+money([180000,450000,900000,1700000][S.luck-1]||0)+'</button></div>';
+  return html;
+}
+function render(){
+  ensureDaily();updateTop();navActive();
+  document.getElementById('numbersTab').classList.toggle('active',S.main==='numbers');
+  document.getElementById('carsTab').classList.toggle('active',S.main==='cars');
+  let c=document.getElementById('content');
+  if(S.main==='cars'){c.innerHTML=garageView();return}
+  if(S.page==='roll')c.innerHTML=rollView();
+  else if(S.page==='inv')c.innerHTML=invView();
+  else if(S.page==='market')c.innerHTML=marketView();
+  else if(S.page==='boxes')c.innerHTML=boxesView();
+  else if(S.page==='garage')c.innerHTML=garageView();
+  else c.innerHTML=profileView();
+  bind();
+}
+function bind(){
+  document.getElementById('numbersTab').onclick=function(){setMain('numbers')};
+  document.getElementById('carsTab').onclick=function(){setMain('cars')};
+  document.getElementById('navRoll').onclick=function(){setPage('roll')};
+  document.getElementById('navInv').onclick=function(){setPage('inv')};
+  document.getElementById('navMarket').onclick=function(){setPage('market')};
+  document.getElementById('navBoxes').onclick=function(){setPage('boxes')};
+  document.getElementById('navGarage').onclick=function(){setPage('garage')};
+  document.getElementById('menuBtn').onclick=function(){setPage('profile')};
+  document.getElementById('versionBtn').onclick=function(){toast('Номерок • версия GitHub')};
+  let s=document.getElementById('spinBtn');if(s)s.onclick=spin;
+  let k=document.getElementById('keepBtn');if(k)k.onclick=storeLast;
+  let sl=document.getElementById('sellLastBtn');if(sl)sl.onclick=sellLast;
+  let db=document.getElementById('dailyBtn');if(db)db.onclick=daily;
+  document.querySelectorAll('[data-sell]').forEach(function(b){b.onclick=function(){sellPlate(b.getAttribute('data-sell'))}});
+  document.querySelectorAll('[data-market]').forEach(function(b){b.onclick=function(){marketSell(b.getAttribute('data-market'))}});
+  document.querySelectorAll('[data-box]').forEach(function(b){b.onclick=function(){openBox(Number(b.getAttribute('data-box')))}});
+  document.querySelectorAll('[data-claim]').forEach(function(b){b.onclick=function(){claim(b.getAttribute('data-claim'))}});
+  let lb=document.getElementById('luckBtn');if(lb)lb.onclick=function(){
+    if(S.luck>=5)return;let price=[180000,450000,900000,1700000][S.luck-1];
+    if(S.money<price){toast('Не хватает виртуальных ₽');return}S.money-=price;S.luck++;save();render();toast('Удача повышена')
+  };
+}
+document.getElementById('modal').onclick=function(e){if(e.target.id==='modal')closeModal()};
+render();
+
+/* Встроенная проверка запуска. Обычный игрок её не замечает. */
+if(new URLSearchParams(location.search).has('test')){
+  setTimeout(function(){
+    try{
+      let before=S.money;
+      document.getElementById('navInv').click();
+      document.getElementById('navMarket').click();
+      document.getElementById('navBoxes').click();
+      document.getElementById('navGarage').click();
+      document.getElementById('navRoll').click();
+      document.getElementById('spinBtn').click();
+      document.body.setAttribute('data-selftest',S.money<before?'PASS':'FAIL');
+      document.title='Номерок SELFTEST '+document.body.getAttribute('data-selftest');
+    }catch(e){
+      document.body.setAttribute('data-selftest','FAIL');
+      document.title='Номерок SELFTEST FAIL';
+    }
+  },50);
+}
+</script>
+</body>
+</html>
