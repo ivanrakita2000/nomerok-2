@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Номерок — тестовый билд</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#000;color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;min-height:100vh}
+button{font:inherit;border:0;color:inherit;cursor:pointer}
+.app{max-width:500px;min-height:100vh;margin:auto;background:#050505;padding-bottom:98px}
+.top{padding:18px 18px 10px}
+.header{display:flex;align-items:center;gap:10px}.menu{width:58px;height:58px;border-radius:50%;background:#1c1c1f;display:grid;place-items:center;font-size:27px}
+.titleWrap{flex:1;min-width:0}.title{font-size:22px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.subtitle{color:#888;font-size:13px;font-weight:700;margin-top:2px}
+.dots{width:44px;height:44px;border:2px solid #ddd;border-radius:50%;background:#090909;font-size:21px}
+.stats{display:flex;align-items:center;gap:8px;margin-top:15px}.pill{background:#1b1b1e;border-radius:30px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-weight:800}.xpbar{width:62px;height:8px;background:#36363a;border-radius:8px;overflow:hidden}.xpbar i{display:block;height:100%;background:#39d26f;border-radius:8px;width:35%}
+.luck{font-size:21px}.balance{margin-left:auto;text-align:right}.balance small{display:block;color:#777;font-size:11px}.balance b{font-size:23px}
+.tabs{display:flex;background:#1a1a1d;border:3px solid #242427;border-radius:20px;padding:2px;margin:12px 18px 0}.tab{flex:1;background:transparent;padding:13px;border-radius:15px;color:#8e8e94;font-weight:850;font-size:17px}.tab.active{background:#656569;color:white}
+.content{padding:0 18px}.offer{margin-top:20px;border:1px solid #8b173d;background:linear-gradient(100deg,#301021,#1c0d18);border-radius:18px;padding:13px 15px;display:flex;align-items:center;gap:12px}.offerIcon{width:50px;height:50px;border-radius:15px;background:#ff2d62;display:grid;place-items:center;font-size:27px}.offer b{font-size:18px}.offer span{color:#aaa;font-size:12px}.section{margin:24px 4px 11px;font-size:19px;font-weight:850}
+.pack{background:#18181b;border-radius:20px;margin:10px 0;padding:16px;border:1px solid #252529}.packTop{display:flex;justify-content:space-between;align-items:start}.packName{font-size:18px;font-weight:850}.packDesc{color:#818188;font-size:12px;line-height:1.35;margin-top:4px;max-width:280px}.packPrice{font-weight:900;font-size:17px}.openBtn{width:100%;background:#32d45d;color:#061109;border-radius:15px;padding:15px;margin-top:13px;font-weight:900;font-size:16px}.pack.common{border-color:#29292d}.pack.rare{border-color:#245e8b}.pack.epic{border-color:#7136a0}.pack.legendary{border-color:#9c771e}
+.resultBox{margin-top:20px;text-align:center;background:radial-gradient(circle,#242428 0,#0b0b0c 58%,#000 75%);border-radius:28px;padding:20px 8px 25px;min-height:440px;display:flex;flex-direction:column;align-items:center;justify-content:center}.rarity{display:inline-block;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.5px}.common{background:#333;color:#ccc}.rare{background:#153c58;color:#6fc8ff}.epic{background:#38204c;color:#d19aff}.legendary{background:#473915;color:#ffd75a}.unique{background:linear-gradient(90deg,#ffd65c,#fff1a4,#ffd65c);color:#17120a}
+.plate{background:#f3f3ef;color:#101010;border-radius:8px;border:3px solid #111;box-shadow:0 0 0 2px #eee,0 10px 25px #000;min-width:315px;padding:10px 13px;font:900 31px/1 monospace;letter-spacing:2px;margin:18px 0 13px}.region{color:#777;font-weight:750;font-size:14px}.findings{margin-top:13px;font-size:17px;font-weight:850;line-height:1.65}.finding{color:#e5e5e7}.price{margin-top:18px;color:#777}.price b{color:#fff;font-size:19px}.actionRow{display:flex;gap:9px;margin-top:18px}.action{background:#1c1c20;border-radius:15px;padding:13px 17px;font-weight:850}.action.green{background:#2fd35b;color:#061109}.bigSpin{width:100%;margin-top:18px;background:#31d65c;color:#051108;border-radius:17px;padding:17px;font-size:19px;font-weight:950;box-shadow:0 8px 28px #21c84b22}.cool{opacity:.55;pointer-events:none}
+.card{background:#17171a;border:1px solid #27272b;border-radius:18px;padding:13px;margin:10px 0}.miniPlate{background:#f1f1ed;color:#111;border-radius:6px;text-align:center;padding:9px;font:900 22px monospace;letter-spacing:1px}.row{display:flex;justify-content:space-between;align-items:center;margin-top:9px}.muted{color:#85858b;font-size:12px}.sell{margin-top:10px;width:100%;background:#242429;border-radius:12px;padding:11px;font-weight:800}.garageCar{display:flex;gap:12px;align-items:center}.carIcon{width:78px;height:58px;border-radius:14px;background:linear-gradient(145deg,#38404b,#16181c);display:grid;place-items:center;font-size:36px}.empty{text-align:center;color:#777;padding:60px 20px}
+.bottom{position:fixed;bottom:0;left:0;right:0;max-width:500px;margin:auto;background:rgba(9,9,10,.96);backdrop-filter:blur(16px);border-top:1px solid #222;padding:10px 15px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:20}.nav{flex:1;background:transparent;color:#777;font-size:11px;font-weight:800;padding:5px}.nav.active{color:white}
+.toast{position:fixed;top:20px;left:50%;transform:translate(-50%,-120px);background:#27272b;border:1px solid #414148;border-radius:14px;padding:12px 17px;z-index:50;font-size:13px;font-weight:750;transition:.25s}.toast.show{transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;background:#000;z-index:40;display:none;overflow:auto}.modal.show{display:block}.modalTop{padding:18px;display:flex;justify-content:space-between}.close{background:#1b1b1e;border-radius:50%;width:42px;height:42px;font-size:20px}.modal .content{padding-bottom:40px}
+.spinAnim{animation:spin .75s ease-in-out}@keyframes spin{0%{transform:scale(.9) rotate(-1deg);filter:brightness(.7)}45%{transform:scale(1.03) rotate(1deg);filter:brightness(1.7)}100%{transform:scale(1);filter:brightness(1)}}
+
+.plateReal{display:flex;align-items:stretch;background:#f5f5ef;color:#111;border:3px solid #111;border-radius:9px;overflow:hidden;box-shadow:0 0 0 2px #ddd,0 12px 30px #0008;min-width:315px;margin:18px auto 13px;max-width:390px}
+.plateMain{flex:1;display:flex;align-items:center;justify-content:center;padding:12px 8px;font:900 32px/1 monospace;letter-spacing:2px;white-space:nowrap}
+.plateRegion{width:76px;border-left:3px solid #111;display:flex;flex-direction:column;align-items:center;justify-content:center;font:900 29px/1 Arial,sans-serif}
+.plateRus{font:700 10px/1 Arial,sans-serif;margin-top:5px;display:flex;gap:3px;align-items:center}
+.flag{display:inline-block;width:22px;height:14px;background:linear-gradient(#fff 0 33%,#2358b8 33% 66%,#d52b2b 66%);border:1px solid #888}
+.rollStage{min-height:170px;display:flex;align-items:center;justify-content:center}
+.rollStage .plateReal{transition:transform .12s,filter .12s,opacity .12s}
+.rollStage.spinning .plateReal{transform:scale(1.04);filter:blur(1.2px);opacity:.82}
+.resultReveal{animation:revealPlate .55s cubic-bezier(.2,.9,.25,1.2)}
+@keyframes revealPlate{0%{transform:scale(.72) translateY(-12px);opacity:0}65%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
+.rollGlow{animation:glowDrop .9s ease-out}
+@keyframes glowDrop{0%{box-shadow:0 0 0 2px #ddd,0 0 0 0 rgba(49,214,92,0)}35%{box-shadow:0 0 0 2px #fff,0 0 35px 8px rgba(49,214,92,.35)}100%{box-shadow:0 0 0 2px #ddd,0 12px 30px #0008}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top">
+ <div class="header"><button class="menu" onclick="toast('Меню будет добавлено позже')">☰</button><div class="titleWrap"><div class="title">Номерок | Генератор номеров</div><div class="subtitle">тестовый билд</div></div><button class="dots" onclick="toast('Версия 0.1')">•••</button></div>
+ <div class="stats"><div class="pill">Ур. <span id="level">1</span><span class="xpbar"><i id="xpbar"></i></span></div><div class="pill luck">🍀 <span id="luck">1</span></div><div class="balance"><small>Баланс</small><b id="money">500 000 ₽</b></div></div>
+</div>
+<div class="tabs"><button id="numbersTab" class="tab active" onclick="setMain('numbers')">Номера</button><button id="carsTab" class="tab" onclick="setMain('cars')">Машины</button></div>
+<div id="content" class="content"></div>
+</div>
+<div id="toast" class="toast"></div>
+<div class="bottom">
+<button id="navRoll" class="nav active" onclick="setPage('roll')">🎰<br>Крутить</button>
+<button id="navInv" class="nav" onclick="setPage('inv')">🔢<br>Мои номера</button>
+<button id="navMarket" class="nav" onclick="setPage('market')">💰<br>Рынок</button>
+<button id="navGarage" class="nav" onclick="setPage('garage')">🚘<br>Гараж</button>
+</div>
+
+<script>
+const REGION_NAMES={95:"Чеченская Республика",77:"Москва",97:"Москва",99:"Москва",177:"Москва",197:"Москва",199:"Москва",777:"Москва",50:"Московская область",90:"Московская область",150:"Московская область",190:"Московская область",750:"Московская область",790:"Московская область",78:"Санкт-Петербург",98:"Санкт-Петербург",178:"Санкт-Петербург",198:"Санкт-Петербург",52:"Нижегородская область",152:"Нижегородская область",54:"Новосибирская область",154:"Новосибирская область",63:"Самарская область",163:"Самарская область",66:"Свердловская область",96:"Свердловская область",196:"Свердловская область",74:"Челябинская область",174:"Челябинская область",774:"Челябинская область",23:"Краснодарский край",93:"Краснодарский край",123:"Краснодарский край",193:"Краснодарский край",61:"Ростовская область",161:"Ростовская область",761:"Ростовская область",16:"Республика Татарстан",116:"Республика Татарстан",716:"Республика Татарстан",102:"Республика Башкортостан",116:"Республика Татарстан",59:"Пермский край",159:"Пермский край",125:"Приморский край",25:"Приморский край",24:"Красноярский край",124:"Красноярский край",42:"Кемеровская область",142:"Кемеровская область",72:"Тюменская область",172:"Тюменская область",86:"Ханты-Мансийский автономный округ — Югра",186:"Ханты-Мансийский автономный округ — Югра",82:"Республика Крым",182:"Республика Крым",92:"Севастополь",76:"Ярославская область",176:"Ярославская область",36:"Воронежская область",136:"Воронежская область",64:"Саратовская область",164:"Саратовская область",48:"Липецкая область",40:"Калужская область",31:"Белгородская область",33:"Владимирская область",32:"Брянская область",44:"Костромская область",45:"Курганская область",46:"Курская область",47:"Ленинградская область",147:"Ленинградская область",69:"Тверская область",169:"Тверская область",71:"Тульская область",51:"Мурманская область",55:"Омская область",155:"Омская область",56:"Оренбургская область",156:"Оренбургская область",57:"Орловская область",58:"Пензенская область",62:"Рязанская область",67:"Смоленская область",68:"Тамбовская область",73:"Ульяновская область",173:"Ульяновская область",75:"Забайкальский край",35:"Вологодская область",37:"Ивановская область",38:"Иркутская область",138:"Иркутская область",39:"Калининградская область",139:"Калининградская область",41:"Камчатский край",43:"Кировская область",49:"Магаданская область",60:"Псковская область",65:"Сахалинская область",70:"Томская область",170:"Томская область",89:"Ямало-Ненецкий автономный округ",11:"Республика Коми",12:"Республика Марий Эл",13:"Республика Мордовия",14:"Республика Саха (Якутия)",15:"Республика Северная Осетия — Алания",17:"Республика Тыва",18:"Удмуртская Республика",19:"Республика Хакасия",21:"Чувашская Республика",22:"Алтайский край",122:"Краснодарский край",126:"Ставропольский край",26:"Ставропольский край",27:"Хабаровский край",127:"Хабаровский край",28:"Амурская область",29:"Архангельская область",30:"Астраханская область",34:"Волгоградская область",134:"Волгоградская область",53:"Новгородская область",57:"Орловская область"};
+const LETTERS=["А","В","Е","К","М","Н","О","Р","С","Т","У","Х"];
+const REGIONS=Object.keys(REGION_NAMES).map(Number);
+const SERIES=["ААА","МММ","ООО","ХХХ","ВВВ","ККК","ННН","ТТТ","АМР","АМО","СКР"];
+const PACKS=[
+ {id:"pool",name:"Лот номеров",price:0,cls:"common",desc:"Все гражданские номера находятся в одном общем пуле.",mult:1}
+];
+let S=JSON.parse(localStorage.getItem("nomerok_test")||"null")||{money:500000,level:1,xp:0,luck:1,plates:[],cars:[],page:"roll",main:"numbers",last:null};
+
+const fmt=n=>Math.round(n).toLocaleString("ru-RU")+" ₽";
+function save(){localStorage.setItem("nomerok_test",JSON.stringify(S));updateTop()}
+function updateTop(){document.getElementById("money").textContent=fmt(S.money);document.getElementById("level").textContent=S.level;document.getElementById("luck").textContent=S.luck;document.getElementById("xpbar").style.width=Math.min(100,S.xp)+"%"}
+function toast(t){let x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1800)}
+function xp(n){S.xp+=n;if(S.xp>=100){S.xp-=100;S.level++;toast("Новый уровень: "+S.level)}}
+function setPage(p){S.page=p;document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));document.getElementById("nav"+({roll:"Roll",inv:"Inv",market:"Market",garage:"Garage"}[p])).classList.add("active");render()}
+function setMain(m){S.main=m;document.getElementById("numbersTab").classList.toggle("active",m==="numbers");document.getElementById("carsTab").classList.toggle("active",m==="cars");render()}
+function regionName(r){return REGION_NAMES[r]||"Неизвестный регион"}
+
+function wordDigit(d){return {0:"нулей",1:"единицы",2:"двойки",3:"тройки",4:"четвёрки",5:"пятёрки",6:"шестёрки",7:"семёрки",8:"восьмёрки",9:"девятки"}[d]}
+function findings(nums,letters,region){
+ let arr=[],counts={};[...nums].forEach(x=>counts[x]=(counts[x]||0)+1);
+ Object.entries(counts).forEach(([d,n])=>{if(n===3)arr.push(["Три "+wordDigit(d),"×4"]);else if(n===2)arr.push(["Две "+wordDigit(d),"×2,5"])});
+ let lc={};[...letters].forEach(x=>lc[x]=(lc[x]||0)+1);
+ Object.entries(lc).forEach(([l,n])=>{if(n===3)arr.push(["Три "+l,"×4"]);else if(n===2)arr.push(["Две "+l,"×2,5"])});
+ if(nums==="001")arr.push(["Начальные нули","×1,8"]);
+ if(nums==="007")arr.push(["Комбинация 007","×3"]);
+ if(["123","321"].includes(nums))arr.push(["Последовательность","×1,8"]);
+ if(nums[0]===nums[2]&&nums[0]!==nums[1])arr.push(["Зеркальная комбинация","×1,7"]);
+ if(SERIES.includes(letters))arr.push(["Серия "+letters,"×2"]);
+ if(["АМР","АМО","СКР"].includes(letters))arr.push(["Особая серия","×2,5"]);
+ if([77,97,99,177,197,199,777].includes(region))arr.push(["Популярный регион","×1,3"]);
+ return arr;
+}
+function generate(pack){
+ let nums=String(Math.floor(Math.random()*1000)).padStart(3,"0");
+ let letters=LETTERS[Math.floor(Math.random()*LETTERS.length)]
+   +LETTERS[Math.floor(Math.random()*LETTERS.length)]
+   +LETTERS[Math.floor(Math.random()*LETTERS.length)];
+ let region=REGIONS[Math.floor(Math.random()*REGIONS.length)];
+
+ let f=findings(nums,letters,region), score=0;
+ f.forEach(x=>score+=x[1]==="×4"?40:x[1]==="×3"?30:x[1]==="×2,5"?25:x[1]==="×2"?20:x[1]==="×1,8"?18:x[1]==="×1,7"?17:x[1]==="×1,3"?8:5);
+
+ // Extra bonuses are calculated only after the number is generated.
+ if(nums==="777"&&letters==="ААА")score+=45;
+ if(nums==="777"&&letters==="МР")score+=25;
+ if(nums===String(region).padStart(3,"0"))score+=25;
+ if(letters[0]===letters[1]&&letters[1]===letters[2])score+=15;
+ if(["АМР","ЕКХ","СКР","АМО","ММР","ХКХ","ККХ"].includes(letters))score+=15;
+
+ let tier=score>=110?"unique":score>=75?"legendary":score>=45?"epic":score>=25?"rare":"common";
+
+ // Valuation is determined only after the result is known.
+ let base={common:500,rare:5000,epic:25000,legendary:120000,unique:750000}[tier];
+ let value=Math.round(base*(.8+Math.random()*.4));
+ if(nums==="777"&&region===77) value=Math.max(value,900000);
+ if(nums==="999"&&region===99) value=Math.max(value,700000);
+ if(letters==="АМР"&&region===77) value=Math.max(value,1000000);
+ if(letters==="ААА"&&nums==="777"&&region===77) value=Math.max(value,2000000);
+
+ return {text:letters[0]+nums+letters[1]+letters[2],nums,letters,region,score,tier,value,findings:f};
+}
+function plateMarkup(x, cls=""){
+ return `<div class="plateReal ${cls}">
+   <div class="plateMain">${x.text}</div>
+   <div class="plateRegion">${x.region}<div class="plateRus">RUS <span class="flag"></span></div></div>
+ </div>`;
+}
+function randomPreview(){
+ let x=generate(PACKS[0]);
+ return x;
+}
+function openPack(id){
+ const btn=document.querySelector(".bigSpin");
+ if(btn) btn.disabled=true;
+ const stage=document.getElementById("rollStage");
+ if(!stage){ drawResult(); return; }
+ stage.classList.add("spinning");
+ let ticks=0;
+ const timer=setInterval(()=>{
+   ticks++;
+   const x=randomPreview();
+   stage.innerHTML=plateMarkup(x);
+   if(ticks>=14){
+     clearInterval(timer);
+     stage.classList.remove("spinning");
+     drawResult();
+   }
+ },90);
+}
+function drawResult(){
+ let x=generate(PACKS[0]), idn=Date.now()+Math.random();
+ x.id=idn;x.installed=false;
+ S.plates.unshift(x);
+ const carPool=["Lada 2106","Lada 2114","BMW E36","BMW E60","Toyota Camry XV40","Toyota Supra A80","Nissan Skyline R34","Nissan GT-R R35","Porsche 911","Mercedes-Benz S 63 AMG"];
+ S.cars.unshift({id:Date.now()+Math.random(),model:carPool[Math.floor(Math.random()*carPool.length)],plateId:idn});
+ S.last=x;xp(5);save();showResult(x);
+}
+function renderRoll(c){
+ c.innerHTML=`<div class="offer"><div class="offerIcon">🎫</div><div><b>Лот номеров</b><br><span>Все номера — один общий пул. Редкость определяется только после выпадения.</span></div></div>
+ <div class="section">Выбить номер</div>
+ <div class="card"><div class="muted">Никаких отдельных лотов «редкий/эпический/легендарный». Сначала случайно выпадает номер, затем игра оценивает его комбинацию и показывает ценность.</div></div>
+ <div id="rollStage" class="rollStage">${S.last?plateMarkup(S.last):plateMarkup({text:"А000АА",region:77})}</div>
+ <button class="bigSpin" onclick="openPack('pool')">Крутить ещё</button>
+ <div class="section">Последний номер</div>`+
+ (S.last?mini(S.last):`<div class="empty">Пока ничего не выбито.<br>Нажми «Крутить ещё».</div>`);
+}
+>
