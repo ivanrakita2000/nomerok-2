@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07070a">
+<title>Номерок — коллекционер</title>
+<style>
+:root{--bg:#07070a;--card:#15151a;--card2:#1b1b21;--line:#292a31;--muted:#858892;--text:#f7f7fa;--green:#32dc62;--red:#ff426b;--blue:#6f8fff;--purple:#bd78ff;--gold:#ffb84d}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -10%,#1a0f20 0,#0b0b0f 28%,#07070a 65%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{padding-bottom:96px}
+button,input{font:inherit}button{border:0;color:inherit;cursor:pointer}
+button:disabled{opacity:.42;cursor:not-allowed}
+.app{width:min(640px,100%);margin:auto;padding:14px 14px 118px}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.brand{font-size:24px;font-weight:950;letter-spacing:-.8px;line-height:1.02}
+.sub{font-size:11px;color:#8d8f98;margin-top:5px;font-weight:800}
+.topRight{display:flex;align-items:center;gap:7px}
+.balance{text-align:right;font-size:20px;font-weight:950;white-space:nowrap}
+.balance small{display:block;color:#74777f;font-size:10px;text-transform:uppercase;letter-spacing:.7px}
+.iconBtn{width:42px;height:42px;border-radius:14px;background:#1b1b20;border:1px solid var(--line);font-size:19px}
+.stats{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px;margin-top:16px}
+.pill{background:linear-gradient(145deg,#1a1a1f,#121216);border:1px solid #26272d;border-radius:20px;padding:10px 11px;box-shadow:0 8px 22px rgba(0,0,0,.16)}
+.pill b{font-size:17px}.pill .muted{font-size:10px}
+.progress{height:6px;background:#2c2d32;border-radius:9px;overflow:hidden;margin-top:6px}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#27d95b,#89ff8d);border-radius:9px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#1a1a1f;border:1px solid #292a2f;border-radius:18px;padding:3px;margin-top:15px}
+.tab{background:transparent;color:#8b8d95;border-radius:15px;padding:11px;font-weight:950}.tab.active{background:#66676c;color:#fff}
+.event{margin-top:13px;padding:12px 14px;border-radius:21px;background:linear-gradient(105deg,#24102a,#171922);border:1px solid #4e2b61;display:flex;align-items:center;gap:11px}
+.eventIcon{width:43px;height:43px;border-radius:14px;background:linear-gradient(145deg,#bd55ff,#6444ff);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 24px rgba(139,71,255,.18)}
+.event b{font-size:14px}.event span{display:block;color:#aca8b4;font-size:11px;font-weight:800;margin-top:2px}
+.card{background:linear-gradient(145deg,#17171c,#111114);border:1px solid #25262c;border-radius:25px;padding:14px;margin-top:13px;box-shadow:0 18px 55px rgba(0,0,0,.24)}
+.titleRow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.titleRow b{font-size:17px}.titleRow span{font-size:11px;color:#8b8d95;font-weight:850}
+.badge{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;background:#222328;color:#b9bbc2;font-size:10px;font-weight:950}
+.hero{padding:17px}.plateArea{margin-top:6px}
+.plateWrap{position:relative}
+.plate{position:relative;display:flex;align-items:stretch;min-height:122px;overflow:hidden;border:3px solid #0d0e10;border-radius:13px;background:linear-gradient(180deg,#ffffff 0%,#f5f5f3 44%,#ddddda 100%);box-shadow:0 0 0 1px rgba(255,255,255,.9) inset,0 0 0 2px #bfc0bd,0 17px 38px rgba(0,0,0,.26);font-family:Arial,Helvetica,sans-serif}
+.plate:before{content:"";position:absolute;inset:4px;border-radius:8px;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -5px 10px rgba(0,0,0,.06)}
+.plateScrew{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#b7b7b4 48%,#666 100%);box-shadow:0 1px 2px rgba(0,0,0,.35);z-index:3}
+.plateScrew.tl{left:7px;top:7px}.plateScrew.bl{left:7px;bottom:7px}.plateScrew.tr{right:7px;top:7px}.plateScrew.br{right:7px;bottom:7px}
+.plateMain{flex:1;display:flex;align-items:center;justify-content:center;color:#08090a;font-size:58px;letter-spacing:0;font-weight:900;white-space:nowrap;padding:0 8px 0 18px;position:relative;z-index:2;text-shadow:0 1px 0 #fff}
+.plateFirst,.plateLetters,.plateDigits{display:inline-flex;align-items:center;justify-content:center}
+.plateFirst{font-size:.92em;margin-right:2px}.plateDigits{letter-spacing:2px;margin-right:8px}.plateLetters{letter-spacing:0}
+.plateDivider{width:1px;background:rgba(0,0,0,.1);margin:14px 3px}
+.plateRegion{width:108px;flex:0 0 108px;color:#0a0a0b;border-left:3px solid #151618;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:2;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(218,218,215,.2))}
+.plateRegion strong{font-size:43px;line-height:.95;font-weight:900;letter-spacing:-1px}.rus{margin-top:8px;font-size:14px;font-weight:900;display:flex;gap:5px;align-items:center}.flag{display:inline-block;width:24px;height:14px;border:1px solid #989996;border-radius:2px;background:linear-gradient(#fff 0 33%,#2558b9 33% 66%,#d9343b 66% 100%)}
+.plateType{position:absolute;bottom:9px;font-size:7px;letter-spacing:1.2px;font-weight:900;color:#55585d;text-transform:uppercase}
+.plateText{text-align:center;margin-top:13px}.plateText .format{font-size:12px;color:#65686f;font-weight:900;letter-spacing:.4px}.plateText .region{font-size:11px;color:#8a8c93;font-weight:800;margin-top:3px}.plateText .why{font-size:15px;font-weight:900;margin-top:8px;line-height:1.2}.findingList{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:8px}.finding{font-size:9px;font-weight:900;padding:5px 7px;border-radius:999px;background:#202127;border:1px solid #303139;color:#d5d6da}.finding b{color:#fff}.plateText .price{font-size:29px;font-weight:950;margin-top:9px;letter-spacing:-.5px}.plateText .rarity{font-size:10px;font-weight:950;margin-top:7px;display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:#25262b;border:1px solid #35363d}.rarity-unique{box-shadow:0 0 22px rgba(255,120,231,.18)}.rarity-legend{box-shadow:0 0 22px rgba(255,193,91,.16)}.rarity-epic{box-shadow:0 0 22px rgba(198,136,255,.14)}.rarity-rare{box-shadow:0 0 22px rgba(130,170,255,.12)}
+.plateHint{font-size:9px;color:#6f7178;text-align:center;margin-top:5px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.btn{padding:13px 11px;border-radius:17px;background:#25262b;font-weight:950}.btn.green{background:#2bd75c;color:#061008}.btn.red{background:#39151e;color:#ff91a5}.btn.blue{background:#192238;color:#a9baff}.btn.gold{background:#332514;color:#ffd58d}
+.spinWrap{text-align:center;margin-top:14px}.cost{color:#8c8e96;font-size:11px;font-weight:850;margin-bottom:7px}
+.spin{width:100%;padding:16px;border-radius:22px;background:linear-gradient(100deg,#30dc61,#20c951);color:#041009;font-size:22px;font-weight:950;box-shadow:0 16px 40px rgba(33,214,88,.18)}.spin:disabled{filter:grayscale(1);box-shadow:none}
+.smallNote{font-size:10px;color:#6f7178;margin-top:6px}
+.infoGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.info{background:#1a1a1f;border:1px solid #27282e;border-radius:16px;padding:10px}.info b{font-size:12px}.info span{display:block;color:#878991;font-size:10px;margin-top:3px}
+.nav{position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);width:min(640px,100%);padding:8px 7px calc(8px + env(safe-area-inset-bottom));background:rgba(11,11,14,.95);backdrop-filter:blur(20px);border-top:1px solid #24252a;display:grid;grid-template-columns:repeat(5,1fr)}
+.nav button{background:transparent;color:#777981;font-size:9px;font-weight:950;padding:5px 2px}.nav button.active{color:#fff}.ni{display:block;font-size:19px;line-height:1.05;margin-bottom:3px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.smallCard{background:#19191e;border:1px solid #27282e;border-radius:19px;padding:11px}.smallCard h3{font-size:13px;margin:0 0 4px}.smallCard p{font-size:10px;color:#85878f;margin:0;line-height:1.4}
+.stat{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #23242a;font-size:12px}.stat:last-child{border-bottom:0}.stat span{color:#868890;text-align:right}
+.quest{display:flex;align-items:center;gap:9px;background:#19191d;border:1px solid #26272d;border-radius:17px;padding:10px;margin-top:8px}.qicon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#27282e;font-size:18px;flex:0 0 auto}.quest b{font-size:12px}.quest span{display:block;font-size:10px;color:#85878f;margin-top:2px}.reward{margin-left:auto;color:#aaf3b6;font-weight:950;font-size:11px;white-space:nowrap}
+.container{border-radius:21px;padding:12px;background:linear-gradient(145deg,#191a20,#111216);border:1px solid #292b32;min-height:224px;position:relative;overflow:hidden}.container .boxIcon{text-align:center;font-size:58px;padding:8px}.container h3{text-align:center;margin:1px 0 3px;font-size:15px}.container .desc{text-align:center;color:#8a8c94;font-size:10px;min-height:28px}.container .cprice{text-align:center;font-weight:950;font-size:15px;margin-top:4px}.open{width:100%;padding:11px;margin-top:7px;border-radius:15px;background:#292a30;font-weight:950}.container.rare{box-shadow:inset 0 0 65px rgba(84,121,255,.11)}.container.epic{box-shadow:inset 0 0 65px rgba(190,87,255,.12)}.container.legend{box-shadow:inset 0 0 65px rgba(255,176,65,.12)}
+.car{position:relative;overflow:hidden;background:linear-gradient(145deg,#191a1f,#111216);border:1px solid #292a30;border-radius:22px;padding:12px}.carIcon{font-size:57px;text-align:center;padding:7px}.car h3{font-size:14px;margin:1px 0 2px}.car .meta{font-size:10px;color:#85878e}.car .price{font-size:16px;font-weight:950;margin-top:7px}.car .tag{position:absolute;right:8px;top:8px;background:#25262b;border-radius:999px;padding:5px 7px;font-size:9px;font-weight:950}
+.album{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.regionTile{background:#19191e;border:1px solid #27282e;border-radius:12px;padding:8px 2px;text-align:center;font-size:9px;font-weight:950}.regionTile.done{background:#122019;border-color:#2ad75d}.regionTile .r{font-size:14px;margin-bottom:2px}
+.offer{background:#19191e;border:1px solid #282930;border-radius:19px;padding:11px;margin-top:8px}.offerTop{display:flex;justify-content:space-between;gap:7px}.offer b{font-size:12px}.offer small{font-size:10px;color:#85878f}.offerPrice{font-size:17px;font-weight:950;margin-top:6px}.offerBtn{margin-top:8px;width:100%;padding:10px;border-radius:14px;background:#25262c;font-weight:950}
+.marketPlate{display:flex;align-items:center;gap:8px}.marketMini{transform:scale(.68);transform-origin:left center;width:190px;margin-right:-66px}.marketMini .plate{min-height:72px}.marketMini .plateMain{font-size:27px;padding-left:14px}.marketMini .plateDigits{letter-spacing:1px;margin-right:5px}.marketMini .plateRegion{width:58px;flex-basis:58px;border-left-width:2px}.marketMini .plateRegion strong{font-size:22px}.marketMini .rus{font-size:7px;margin-top:4px}.marketMini .flag{width:12px;height:7px}.marketMini .plateType{display:none}.marketMini .plateScrew{width:5px;height:5px}.marketMini + div{flex:1}
+.notice{padding:10px 11px;border-radius:15px;background:#191a20;border:1px dashed #34353b;color:#91939b;font-size:10px;line-height:1.4;margin-top:9px}
+.progressBig{height:8px;background:#2c2d32;border-radius:99px;overflow:hidden;margin-top:8px}.progressBig i{display:block;height:100%;background:linear-gradient(90deg,#30dc61,#93ff91);width:0}
+.upgrade{background:#19191e;border:1px solid #282930;border-radius:18px;padding:11px;margin-top:8px}.upgradeTop{display:flex;justify-content:space-between;gap:8px}.upgrade h3{margin:0;font-size:13px}.upgrade p{font-size:10px;color:#868991;line-height:1.35;margin:4px 0 0}.upgrade button{margin-top:8px;width:100%;padding:10px;border-radius:14px;background:#25262d;font-weight:950}
+.empty{text-align:center;padding:25px 8px;color:#878991;font-size:11px}.empty b{display:block;color:#fff;font-size:16px;margin-bottom:4px}
+.toast{position:fixed;z-index:60;left:50%;bottom:107px;transform:translate(-50%,18px);opacity:0;pointer-events:none;background:#fff;color:#111;padding:10px 14px;border-radius:14px;font-size:11px;font-weight:950;white-space:nowrap;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;background:rgba(0,0,0,.72);backdrop-filter:blur(8px)}.modal.show{display:flex}.sheet{width:min(640px,100%);background:#151519;border:1px solid #2b2c31;border-radius:28px 28px 0 0;padding:17px 14px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+.sheet h2{text-align:center;margin:2px 0 12px;font-size:20px}.close{width:100%;padding:12px;border-radius:16px;background:#292a30;font-weight:950;margin-top:10px}
+.formRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field{background:#1b1b20;border:1px solid #292a30;border-radius:14px;padding:10px}.field label{font-size:9px;color:#85878e;display:block;margin-bottom:4px}.field input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-weight:900}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}.shaking{animation:shake .11s infinite}
+@media(max-width:430px){.plate{min-height:105px}.plateMain{font-size:44px;padding-left:12px}.plateDigits{letter-spacing:1px;margin-right:6px}.plateRegion{width:82px;flex-basis:82px}.plateRegion strong{font-size:34px}.rus{font-size:10px;margin-top:6px}.flag{width:18px;height:11px}.plateType{font-size:6px;bottom:7px}.grid{gap:7px}.balance{font-size:18px}.plateText .price{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div>
+      <div class="brand">Номерок | Генератор номеров</div>
+      <div class="sub">коллекционер • сезон 1 • осень 2026</div>
+    </div>
+    <div class="topRight">
+      <div class="balance"><small>Баланс</small><span id="balance">500 000 ₽</span></div>
+      <button class="iconBtn" onclick="setPage('profile')">👤</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="pill">Ур. <b id="level">1</b><div class="progress"><i id="xpbar"></i></div></div>
+    <div class="pill">🍀 <b id="luck">1</b><div class="muted">удача</div></div>
+    <div class="pill">🔑 <b id="keys">3</b><div class="muted">жетоны</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="platesTab" onclick="setTop('plates')">Номера</button>
+    <button class="tab" id="carsTab" onclick="setTop('cars')">Машины</button>
+  </div>
+
+  <div id="main"></div>
+</div>
+
+<div class="nav">
+  <button id="navSpin" class="active" onclick="setPage('spin')"><span class="ni">🎰</span>Крутить</button>
+  <button id="navStore" onclick="setPage('store')"><span class="ni">🗃️</span>Номера</button>
+  <button id="navMarket" onclick="setPage('market')"><span class="ni">🏪</span>Рынок</button>
+  <button id="navBoxes" onclick="setPage('boxes')"><span class="ni">📦</span>Контейнеры</button>
+  <button id="navGarage" onclick="setPage('garage')"><span class="ni">🚘</span>Гараж</button>
+</div>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const COST=5000;
+const LETTERS='АВЕКМНОРСТУХ'.split('');
+const REGIONS=[
+['77','Москва'],['97','Москва'],['99','Москва'],['177','Москва'],['197','Москва'],['199','Москва'],['777','Москва'],
+['78','Санкт-Петербург'],['98','Санкт-Петербург'],['178','Санкт-Петербург'],['198','Санкт-Петербург'],
+['23','Краснодарский край'],['93','Краснодарский край'],['123','Краснодарский край'],['193','Краснодарский край'],
+['50','Московская область'],['90','Московская область'],['150','Московская область'],['190','Московская область'],
+['52','Нижегородская область'],['152','Нижегородская область'],['54','Новосибирская область'],['154','Новосибирская область'],
+['66','Свердловская область'],['96','Свердловская область'],['196','Свердловская область'],['16','Татарстан'],['116','Татарстан'],
+['61','Ростовская область'],['161','Ростовская область'],['62','Рязанская область'],['67','Смоленская область'],
+['40','Калужская область'],['43','Кировская область'],['46','Курская область'],['48','Липецкая область'],['55','Омская область'],
+['63','Самарская область'],['163','Самарская область'],['64','Саратовская область'],['72','Тюменская область'],
+['74','Челябинская область'],['174','Челябинская область'],['95','Чеченская Республика'],['26','Ставропольский край'],
+['42','Кемеровская область'],['70','Томская область'],['71','Тульская область'],['86','ХМАО'],['89','ЯНАО']
+];
+
+const CARS=[
+{name:'Lada Granta Sport',icon:'🚗',rarity:'Обычная',price:420000,className:'Street'},
+{name:'Lada Vesta Sport',icon:'🏎️',rarity:'Редкая',price:980000,className:'Sport'},
+{name:'Toyota Supra',icon:'🏁',rarity:'Эпическая',price:5200000,className:'Sport'},
+{name:'Nissan GT-R',icon:'🚘',rarity:'Легендарная',price:9800000,className:'Supercar'},
+{name:'Porsche 911',icon:'🏎️',rarity:'Легендарная',price:12400000,className:'Supercar'},
+{name:'Lamborghini Huracán',icon:'🟨',rarity:'Уникальная',price:18500000,className:'Supercar'},
+{name:'BMW M4',icon:'🚙',rarity:'Эпическая',price:6400000,className:'Sport'},
+{name:'Mercedes-AMG GT',icon:'🚘',rarity:'Легендарная',price:10900000,className:'Supercar'}
+];
+
+const BOXES=[
+{name:'Гаражный',icon:'📦',rarity:'Обычная',price:80000,ids:[0,0,0,1],tag:'для старта',cls:''},
+{name:'Спортивный',icon:'🎁',rarity:'Редкая',price:450000,ids:[0,1,1,2,6],tag:'редкие авто',cls:'rare'},
+{name:'Премиум',icon:'💎',rarity:'Эпическая',price:2000000,ids:[1,2,2,3,4,6,7],tag:'дорогие авто',cls:'epic'}
+];
+
+const MARKET_ORDERS=[
+{name:'Коллекционер 777',desc:'Ищет комбинации с 777',match:p=>p.digits.join('')==='777',mult:1.55},
+{name:'Москва',desc:'Покупает номера столичного региона',match:p=>['77','97','99','177','197','199','777'].includes(p.region),mult:1.25},
+{name:'Зеркало',desc:'Ищет одинаковые буквы и цифры',match:p=>new Set(p.digits).size===1||new Set(p.letters).size===1,mult:1.45},
+{name:'Автолюбитель',desc:'Платит за последовательности',match:p=>['123','321','007'].includes(p.digits.join('')),mult:1.60}
+];
+
+const ACH=[
+{id:'first',icon:'🏁',title:'Первый номер',desc:'Сделай 1 прокрутку',check:s=>s.stats.spins>=1,reward:'10 000 ₽'},
+{id:'ten',icon:'🎰',title:'Десятка',desc:'Сделай 10 прокруток',check:s=>s.stats.spins>=10,reward:'1 🔑'},
+{id:'rare',icon:'✨',title:'Охотник за редкостями',desc:'Найди 5 номеров от редких',check:s=>s.stats.rare>=5,reward:'2 🔑'},
+{id:'regions',icon:'🗺️',title:'Картограф',desc:'Открой 15 регионов',check:s=>s.regions.length>=15,reward:'25 000 ₽'},
+{id:'cars',icon:'🚘',title:'Автопарк',desc:'Собери 5 машин',check:s=>s.cars.length>=5,reward:'2 🔑'},
+{id:'million',icon:'💰',title:'Миллионер',desc:'Получи один номер от 1 000 000 ₽',check:s=>s.stats.bestValue>=1000000,reward:'50 000 ₽'},
+{id:'container',icon:'📦',title:'Открытие сезона',desc:'Открой 5 контейнеров',check:s=>s.stats.opened>=5,reward:'3 🔑'}
+];
+
+const defaults={
+balance:500000,level:1,xp:0,luck:1,keys:3,
+plates:[],cars:[],last:null,page:'spin',top:'plates',regions:[],
+storageMax:20,garageMax:6,spinStreak:0,luckBoost:0,luckBoostSpins:0,
+stats:{spins:0,sold:0,opened:0,bestValue:0,bestText:'—',bestRarity:'—',spent:0,earned:0,rare:0},
+achClaimed:{},collectionClaimed:{},marketSold:0,
+daily:{date:'',bonusClaimed:false,quests:{}},
+recoveryDate:'',
+upgrade:{luck:0,storage:0,garage:0}
+};
+let state;
+try{state=JSON.parse(localStorage.getItem('nomerok_ultra_v1')||'null')}catch(e){state=null}
+state=Object.assign({},defaults,state||{});
+state.stats=Object.assign({},defaults.stats,state.stats||{});
+state.daily=Object.assign({},defaults.daily,state.daily||{});
+state.upgrade=Object.assign({},defaults.upgrade,state.upgrade||{});state.luckBoost=Number(state.luckBoost||0);state.luckBoostSpins=Number(state.luckBoostSpins||0);
+state.plates=Array.isArray(state.plates)?state.plates:[];
+state.cars=Array.isArray(state.cars)?state.cars:[];
+state.regions=Array.isArray(state.regions)?state.regions:[];
+state.achClaimed=state.achClaimed||{};state.collectionClaimed=state.collectionClaimed||{};
+let page=state.page||'spin';
+let top=state.top||'plates';
+let rolling=false;
+
+function today(){return new Date().toISOString().slice(0,10)}
+function money(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+function save(){try{localStorage.setItem('nomerok_ultra_v1',JSON.stringify(state))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function pick(a){return a[rand(0,a.length-1)]}
+function rarityColor(r){return r==='Уникальная'?'#ff78e7':r==='Легендарная'?'#ffc15b':r==='Эпическая'?'#c688ff':r==='Редкая'?'#82aaff':'#a2a4ab'}
+function ensureDaily(){
+  const d=today();
+  if(state.daily.date!==d){state.daily={date:d,bonusClaimed:false,quests:{spins:0,sell:0,rare:0}};save()}
+}
+ensureDaily();
+
+function rollRarity(){
+  const luckBonus=(state.luck-1)*0.006;
+  const x=Math.random();
+  if(x<0.0005+luckBonus*0.03)return'Уникальная';
+  if(x<0.004+luckBonus*0.25)return'Легендарная';
+  if(x<0.035+luckBonus*0.8)return'Эпическая';
+  if(x<0.16+luckBonus*1.7)return'Редкая';
+  return'Обычная';
+}
+function eventBonus(kind){
+ const e=currentEvent();
+ if(e.kind!==kind)return 1;
+ return kind==='beauty'?1.22:kind==='moscow'?1.20:kind==='sport'?1.15:1.22;
+}
+function activateLuckBoost(){
+ state.luckBoost=1; state.luckBoostSpins=10;
+ save(); render(); toast('🍀 Удача +1 на следующие 10 прокруток');
+}
+function collectionClaim(id){
+ const c=COLLECTIONS.find(x=>x.id===id);
+ if(!c||state.collectionClaimed[id]||!c.check(state))return;
+ state.collectionClaimed[id]=true;
+ if(c.reward.includes('₽'))state.balance+=parseInt(c.reward.replace(/\D/g,''),10);
+ if(c.reward.includes('удача'))activateLuckBoost();
+ save();render();toast('Коллекция завершена 🏆');
+}
+function comboMatchesEvent(ds,ls,reg){
+ const k=currentEvent().kind;
+ if(k==='beauty')return ['777','001','007','123','321'].includes(ds);
+ if(k==='moscow')return ['77','97','99','177','197','199','777'].includes(reg);
+ if(k==='sport')return ['007','123','321'].includes(ds);
+ if(k==='mirror')return ds[0]===ds[2]||ls[0]===ls[2];
+ return false;
+}
+function generatePlate(){
+  const digits=[rand(0,9),rand(0,9),rand(0,9)];
+  const letters=[pick(LETTERS),pick(LETTERS),pick(LETTERS)];
+  const reg=pick(REGIONS);
+  const ds=digits.join('');
+  const ls=letters.join('');
+  const findings=[]; let mult=1;
+  const dc={};digits.forEach(d=>dc[d]=(dc[d]||0)+1);
+  const lc={};letters.forEach(l=>lc[l]=(lc[l]||0)+1);
+  const dr=Math.max(...Object.values(dc)),lr=Math.max(...Object.values(lc));
+  const add=(label,m)=>{findings.push(label+' ×'+String(m).replace('.',','));mult*=m};
+  if(ds==='000') add('три нуля',22);
+  else if(['111','222','333','444','555','666','777','888','999'].includes(ds)) add('три одинаковые цифры',18);
+  else if(dr===2) add('две одинаковые цифры',2.5);
+  if(ds==='001'||ds==='007') add('особая комбинация '+ds,7);
+  if(['123','321'].includes(ds)) add('последовательность '+ds,7);
+  if(ds[0]===ds[2]&&ds[0]!==ds[1]) add('зеркальные цифры',1.8);
+  if(ds[0]+ds[1]===ds[2]+ds[1] && ds[0]!==ds[2]) add('парная симметрия',1.15);
+  if(lr===3) add('три одинаковые буквы',14);
+  else if(lr===2) add('две одинаковые буквы',2);
+  if(letters[0]===letters[2]&&letters[1]!==letters[0]) add('зеркальные буквы',3);
+  const popularRegions=['77','97','99','177','197','199','777'];
+  if(popularRegions.includes(reg[0])) add('Москва',1.2);
+  if(reg[0].length===3) add('трёхзначный регион',1.12);
+  if(['М','М','М'].every(x=>letters.includes(x)) && lr===3) add('серия МММ',1.15);
+  const luck=(state.luck||1)-1 + ((state.luckBoostSpins||0)>0?(state.luckBoost||0):0);
+  const luckBonus=Math.min(.08,luck*.006);
+  const comboBoost=Math.min(.07,Math.log(mult+1)/85);
+  const x=Math.random();
+  let rarity='Обычная';
+  if(x<0.00045+luckBonus*0.03+comboBoost*0.02) rarity='Уникальная';
+  else if(x<0.004+luckBonus*0.22+comboBoost*0.18) rarity='Легендарная';
+  else if(x<0.035+luckBonus*0.78+comboBoost*0.55) rarity='Эпическая';
+  else if(x<0.16+luckBonus*1.65+comboBoost*1.4) rarity='Редкая';
+  if(comboMatchesEvent(ds,ls,reg)) mult*=eventBonus(currentEvent().kind);
+  const base={Обычная:700,Редкая:3500,Эпическая:18000,Легендарная:90000,Уникальная:1000000}[rarity];
+  const comboScore=Math.round(Math.log2(Math.max(1,mult))*10);
+  return{
+    id:Date.now()+Math.random(),letters,digits,region:reg[0],regionName:reg[1],
+    text:letters[0]+digits.join('')+letters[1]+letters[2],findings:findings.length?findings:['обычная комбинация'],
+    rarity,value:Math.max(100,Math.round(base*mult)),comboScore
+  };
+}
+
+function rarityClass(r){return r==='Уникальная'?'rarity-unique':r==='Легендарная'?'rarity-legend':r==='Эпическая'?'rarity-epic':r==='Редкая'?'rarity-rare':'rarity-common'}
+function rarityIcon(r){return r==='Уникальная'?'💠':r==='Легендарная'?'👑':r==='Эпическая'?'🔥':r==='Редкая'?'✨':'•'}
+function plateHTML(p,mini=false){
+  const l0=esc(p.letters?.[0]||'А'), l1=esc(p.letters?.[1]||'А'), l2=esc(p.letters?.[2]||'А');
+  const ds=esc((p.digits||[]).join(''));
+  return `<div class="plateWrap"><div class="plate ${mini?'':'heroPlate'} ${p.rarity?rarityClass(p.rarity):''}">
+    <i class="plateScrew tl"></i><i class="plateScrew bl"></i><i class="plateScrew tr"></i><i class="plateScrew br"></i>
+    <div class="plateMain"><span class="plateFirst">${l0}</span><span class="plateDigits">${ds}</span><span class="plateLetters">${l1}${l2}</span></div>
+    <div class="plateRegion"><strong>${esc(p.region||'77')}</strong><div class="rus">RUS <i class="flag"></i></div><div class="plateType">RUSSIAN FEDERATION</div></div>
+  </div></div>`;
+}
+function plateInfoHTML(p){
+  const findings=(p.findings||[]).filter(Boolean);
+  return `<div class="plateText">
+    <div class="format">${esc(p.letters?.[0]||'А')} ${esc((p.digits||[]).join(''))} ${esc((p.letters||[]).slice(1).join(''))} · государственный номер</div>
+    <div class="region">Регион ${esc(p.region)} · ${esc(p.regionName)}</div>
+    ${findings.length?`<div class="findingList">${findings.map(x=>`<span class="finding">${esc(x)}</span>`).join('')}</div>`:'<div class="plateHint">Без особых совпадений</div>'}
+    <div class="price">${money(p.value)}</div>
+    <div class="rarity ${rarityClass(p.rarity)}" style="color:${rarityColor(p.rarity)}">${rarityIcon(p.rarity)} ${esc(p.rarity)}</div>
+  </div>`;
+}
+function fullPlateHTML(p){
+  return `<div class="plateArea">${plateHTML(p)}${plateInfoHTML(p)}</div>`;
+}
+
+function addXP(n){
+  state.xp+=n;
+  while(state.xp>=100){
+    state.xp-=100;
+    state.level++;
+    state.keys++;
+    toast('Новый уровень! +1 🔑');
+  }
+}
+function spin(){
+  ensureDaily();
+  if(rolling)return;
+  if(state.balance<COST){
+    recover();
+    return;
+  }
+  state.balance-=COST;
+  state.stats.spent+=COST;
+  state.daily.quests.spins=(state.daily.quests.spins||0)+1;
+  state.stats.spins++;
+  addXP(8);
+  save();
+  rolling=true;
+  render();
+  let ticks=0,total=18;
+  const timer=setInterval(()=>{
+    const area=document.getElementById('rolling');
+    if(area){
+      const tmp=generatePlate();
+      area.innerHTML=fullPlateHTML(tmp);
+    }
+    ticks++;
+    if(ticks>=total){
+      clearInterval(timer);
+      const p=generatePlate();
+      state.last=p;
+      state.stats.bestValue=Math.max(state.stats.bestValue,p.value);
+      if(p.value===state.stats.bestValue){state.stats.bestText=p.text+' '+p.region;state.stats.bestRarity=p.rarity}
+      if(p.rarity!=='Обычная'){
+        state.stats.rare++;
+        state.daily.quests.rare=(state.daily.quests.rare||0)+1;
+        state.spinStreak++;
+      }else{
+        state.spinStreak=0;
+      }
+      if(!state.regions.includes(p.region))state.regions.push(p.region);
+      if(state.spinStreak>=3){state.keys++;state.spinStreak=0;toast('Серия редких находок! +1 🔑')}
+      addXP(p.rarity==='Уникальная'?45:p.rarity==='Легендарная'?32:p.rarity==='Эпическая'?20:p.rarity==='Редкая'?12:5);
+      if(state.luckBoostSpins>0){state.luckBoostSpins--;if(state.luckBoostSpins===0)state.luckBoost=0;}
+      save();
+      rolling=false;
+      render();
+      toast('Номер выпал — выбирай действие');
+    }
+  },72+ticks*9);
+}
+function storeLast(){
+  if(!state.last)return;
+  if(state.plates.length>=state.storageMax){toast('Хранилище заполнено — расширь его');return}
+  state.plates.unshift(state.last);state.last=null;addXP(4);save();render();toast('Номер сохранён 🗃️');
+}
+function sellLast(){
+  if(!state.last)return;
+  state.balance+=state.last.value;state.stats.sold++;state.stats.earned+=state.last.value;state.daily.quests.sell=(state.daily.quests.sell||0)+1;state.last=null;addXP(3);save();render();toast('Номер продан');
+}
+function sellPlate(id){
+  const i=state.plates.findIndex(p=>p.id==id);if(i<0)return;
+  const p=state.plates[i];state.balance+=p.value;state.stats.sold++;state.stats.earned+=p.value;state.daily.quests.sell=(state.daily.quests.sell||0)+1;state.plates.splice(i,1);save();render();toast('Продано за '+money(p.value));
+}
+function marketMultiplier(p){
+  const hits=MARKET_ORDERS.filter(o=>o.match(p));
+  return hits.length?Math.max(...hits.map(o=>o.mult)):1;
+}
+function marketPrice(p){return Math.round(p.value*marketMultiplier(p))}
+function sellMarket(id){
+  const i=state.plates.findIndex(p=>p.id==id);if(i<0)return;
+  const p=state.plates[i], price=marketPrice(p);
+  state.balance+=price;state.stats.sold++;state.stats.earned+=price;state.marketSold++;state.daily.quests.sell=(state.daily.quests.sell||0)+1;state.plates.splice(i,1);save();render();toast('Рынок выкупил номер за '+money(price));
+}
+function openBox(i){
+  const b=BOXES[i];
+  if(state.balance<b.price){toast('Не хватает '+money(b.price));return}
+  if(state.cars.length>=state.garageMax){toast('Гараж заполнен — расширь его');return}
+  state.balance-=b.price;state.stats.spent+=b.price;state.stats.opened++;
+  const car=CARS[pick(b.ids)];
+  state.cars.push({...car,id:Date.now()+Math.random()});
+  addXP(b.rarity==='Эпическая'?30:b.rarity==='Редкая'?18:10);
+  save();
+  showModal(`<h2>${b.icon} ${b.name} контейнер</h2>
+    <div class="car"><div class="tag">${esc(car.rarity)}</div><div class="carIcon">${car.icon}</div><h3>${esc(car.name)}</h3><div class="meta">${esc(car.className)} · новая машина</div><div class="price">${money(car.price)}</div></div>
+    <div class="notice">Контейнер стоил ${money(b.price)}. Машина добавлена в гараж.</div>
+    <button class="close" onclick="closeModal()">Забрать</button>`);
+  render();
+}
+function claimDaily(){
+  ensureDaily();
+  if(state.daily.bonusClaimed){toast('Ежедневный бонус уже получен');return}
+  state.balance+=15000;state.keys++;state.daily.bonusClaimed=true;addXP(10);save();render();toast('+15 000 ₽ и +1 🔑');
+}
+function claimAchievement(id){
+  const a=ACH.find(x=>x.id===id);if(!a||state.achClaimed[id]||!a.check(state))return;
+  state.achClaimed[id]=true;
+  if(a.reward.includes('🔑'))state.keys+=(a.reward.match(/(\d+)/)||[0,1])[1]*1;
+  if(a.reward.includes('₽'))state.balance+=parseInt(a.reward.replace(/\D/g,''),10);
+  save();render();toast('Достижение получено 🏆');
+}
+function recover(){
+  ensureDaily();
+  if(state.balance>=COST){return}
+  if(state.recoveryDate===today()){toast('Бонус восстановления уже использован сегодня');return}
+  state.balance+=25000;state.recoveryDate=today();save();render();toast('Бонус восстановления: +25 000 ₽');
+}
+function buyLuck(){
+  const costs=[180000,450000,900000,1700000];
+  if(state.luck>=5){toast('Удача уже максимальная');return}
+  const price=costs[state.luck-1];
+  if(state.balance<price){toast('Не хватает денег');return}
+  state.balance-=price;state.stats.spent+=price;state.luck++;state.upgrade.luck++;save();render();toast('Удача повышена 🍀');
+}
+function buyStorage(){
+  const price=50000*(state.upgrade.storage+1);
+  if(state.balance<price){toast('Не хватает денег');return}
+  state.balance-=price;state.stats.spent+=price;state.storageMax+=10;state.upgrade.storage++;save();render();toast('Хранилище расширено');
+}
+function buyGarage(){
+  const price=100000*(state.upgrade.garage+1);
+  if(state.balance<price){toast('Не хватает денег');return}
+  state.balance-=price;state.stats.spent+=price;state.garageMax+=3;state.upgrade.garage++;save();render();toast('Гараж расширен');
+}
+function resetGame(){
+  if(!confirm('Сбросить весь прогресс и начать с 500 000 ₽?'))return;
+  localStorage.removeItem('nomerok_ultra_v1');location.reload();
+}
+function showModal(html){document.getElementById('sheet').innerHTML=html;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+function setTop(v){top=v;state.top=v;document.getElementById('platesTab').classList.toggle('active',v==='plates');document.getElementById('carsTab').classList.toggle('active',v==='cars');render()}
+function setPage(v){page=v;state.page=v;save();render();window.scrollTo(0,0)}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove('show'),1700)}
+function eventText(){const e=currentEvent();return e.icon+' Событие недели: «'+e.name+'» — '+e.desc}
+
+function spinView(){
+  const p=state.last;
+  return `<div class="event"><div class="eventIcon">${currentEvent().icon}</div><div><b>${esc(currentEvent().name)}</b><span>${esc(eventText())}</span></div></div>
+  <div class="notice">Трейдер дня: <b>${dailyTrader().icon} ${esc(dailyTrader().name)}</b> · ${esc(dailyTrader().desc)} · до ×${dailyTrader().mult.toFixed(2)} на подходящие номера.</div>
+  <div class="card hero">
+    <div class="titleRow"><b>Последний результат</b><span>${state.stats.spins} прокруток · 🍀 ${state.luckBoostSpins>0?`+${state.luckBoost} ×${state.luckBoostSpins}`:'обычная'}</span></div>
+    <div id="rolling">${p?fullPlateHTML(p):'<div class="empty"><b>Готов к новой находке</b>Весь номерной пул общий. Комбинация и редкость определяются после выпадения.</div>'}</div>
+    ${p?`<div class="actions"><button class="btn green" onclick="storeLast()">🗃️ В хранилище</button><button class="btn red" onclick="sellLast()">💰 Продать</button></div>`:''}
+    <div class="spinWrap"><div class="cost">Одна прокрутка — <b>5 000 ₽</b> · Баланс: <b>${money(state.balance)}</b></div>
+      <button class="spin" id="spinBtn" onclick="spin()" ${state.balance<COST||rolling?'disabled':''}>${state.balance<COST?'Недостаточно средств':rolling?'Прокрутка…':'Крутить за 5 000 ₽'}</button>
+      <div class="smallNote">Виртуальная валюта игры. При нехватке средств один раз в день доступен бонус восстановления.</div>
+    </div>
+  </div>
+  <div class="card"><div class="titleRow"><b>Как определяется ценность номера</b><span>после выпадения</span></div>
+    <div class="infoGrid"><div class="info"><b>Комбинация</b><span>777, 123, 007, зеркала, повторы и одинаковые буквы складываются в один итоговый множитель.</span></div><div class="info"><b>Регион</b><span>77 / 97 / 99 и другие красивые регионы дают дополнительный бонус.</span></div><div class="info"><b>Редкость</b><span>Определяется случайностью с учётом удачи и красоты комбинации.</span></div><div class="info"><b>Итог</b><span>База редкости × все найденные особенности номера = цена находки.</span></div></div>
+  </div>
+  <div class="card"><div class="titleRow"><b>Экономика</b><span>риск ↔ награда</span></div>
+    <div class="infoGrid">
+      <div class="info"><b>Обычный</b><span>примерно 700–5 000 ₽</span></div>
+      <div class="info"><b>Редкий</b><span>примерно 3 500–50 000 ₽</span></div>
+      <div class="info"><b>Эпический</b><span>примерно 18 000–250 000 ₽</span></div>
+      <div class="info"><b>Легендарный+</b><span>90 000–1 000 000+ ₽</span></div>
+    </div>
+    <div class="notice">Средняя находка не должна бесконечно поддерживать баланс: большинство прокруток — расход, а редкие красивые номера дают шанс резко выйти в плюс. Деньги также можно потратить на улучшения, рынок и контейнеры.</div>
+  </div>
+  <div class="card"><div class="titleRow"><b>Ежедневный бонус</b><span>${state.daily.bonusClaimed?'получен':'доступен'}</span></div>
+    <div class="quest"><div class="qicon">🎁</div><div><b>15 000 ₽ + 1 🔑</b><span>Стабильный небольшой доход для продолжения коллекции</span></div><button class="btn ${state.daily.bonusClaimed?'':'green'}" style="padding:8px 10px" onclick="claimDaily()" ${state.daily.bonusClaimed?'disabled':''}>${state.daily.bonusClaimed?'✓':'Забрать'}</button></div>
+  </div>`;
+}
+function storeView(){
+  const list=[...state.plates];
+  return `<div class="card"><div class="titleRow"><b>Мои номера</b><span>${state.plates.length}/${state.storageMax}</span></div>
+  ${list.length?list.map(p=>`<div class="card" style="margin-top:8px;padding:11px">${plateHTML(p)}${plateInfoHTML(p)}<div class="actions"><button class="btn blue" onclick="sellMarket(${p.id})">🏪 Рынок · ${money(marketPrice(p))}</button><button class="btn red" onclick="sellPlate(${p.id})">💰 Продать · ${money(p.value)}</button></div></div>`).join(''):'<div class="empty"><b>Хранилище пусто</b>Сохраняй понравившиеся номера после выпадения.</div>'}</div>
+  <div class="card"><div class="titleRow"><b>Альбом регионов</b><span>${state.regions.length}/${REGIONS.length}</span></div><div class="album">${REGIONS.map(r=>`<div class="regionTile ${state.regions.includes(r[0])?'done':''}"><div class="r">${r[0]}</div>${state.regions.includes(r[0])?'✓':'?'}</div>`).join('')}</div></div>`;
+}
+function marketView(){
+  const target=MARKET_ORDERS, trader=dailyTrader(), event=currentEvent();
+  return `<div class="card"><div class="titleRow"><b>Рынок</b><span>${state.marketSold} продаж</span></div>
+  <div class="offer" style="border-color:#4a3b20;background:linear-gradient(145deg,#211a10,#151519)">
+    <div class="offerTop"><div><b>${trader.icon} Трейдер дня: ${esc(trader.name)}</b><small>${esc(trader.desc)}</small></div><span class="badge">×${trader.mult.toFixed(2)}</span></div>
+    <div class="offerPrice">Его запрос действует сегодня</div>
+  </div>
+  <div class="notice">${event.icon} ${esc(event.name)} — ${esc(event.desc)}</div>
+  ${target.map(o=>`<div class="offer"><div class="offerTop"><div><b>${esc(o.name)}</b><small>${esc(o.desc)}</small></div><span class="badge">×${o.mult.toFixed(2)}</span></div><div class="offerPrice">Бонус к цене подходящих номеров</div></div>`).join('')}
+  <div class="titleRow" style="margin-top:15px"><b>Твои номера для рынка</b><span>${state.plates.length}</span></div>
+  ${state.plates.length?state.plates.slice(0,8).map(p=>`<div class="offer"><div class="marketPlate"><div class="marketMini">${plateHTML(p,true)}</div><div><b>${esc(p.letters?.[0]||'А')} ${esc((p.digits||[]).join(''))} ${esc((p.letters||[]).slice(1).join(''))} · ${esc(p.region)}</b><small>${esc(p.rarity)} · базовая ${money(p.value)}</small><div class="offerPrice">${marketMultiplier(p)>1?'🔥 ':''}${money(marketPrice(p))}</div></div></div><button class="offerBtn" onclick="sellMarket(${p.id})">${marketMultiplier(p)>1?'Продать по спросу':'Продать NPC'} · ${money(marketPrice(p))}</button></div>`).join(''):'<div class="empty"><b>Пока нечего продавать</b>Сначала собери несколько номеров.</div>'}
+  </div>`;
+}
+function boxesView(){
+  return `<div class="card"><div class="titleRow"><b>Контейнеры</b><span>${state.balance.toLocaleString('ru-RU')} ₽</span></div>
+  <div class="notice">Три уровня контейнеров. Цена растёт вместе с классом машин. Открытие расходует только виртуальные рубли из баланса игры.</div>
+  <div class="grid" style="margin-top:8px">${BOXES.map((b,i)=>`<div class="container ${b.cls}"><div class="boxIcon">${b.icon}</div><h3>${b.name}</h3><div class="desc">${b.tag} · машины до класса ${i===0?'Street':i===1?'Sport':'Supercar'}</div><div class="cprice">${money(b.price)}</div><button class="open" onclick="openBox(${i})" ${state.balance<b.price||state.cars.length>=state.garageMax?'disabled':''}>${state.balance<b.price?'Не хватает денег':state.cars.length>=state.garageMax?'Нет места':'Открыть за '+money(b.price)}</button></div>`).join('')}</div>
+  </div>
+  <div class="card"><div class="titleRow"><b>Вероятности классов</b><span>игровые значения</span></div>
+    <div class="stat"><b>Гаражный</b><span>обычные автомобили</span></div>
+    <div class="stat"><b>Спортивный</b><span>редкие + эпические</span></div>
+    <div class="stat"><b>Премиум</b><span>эпические + легендарные + уникальные</span></div>
+  </div>`;
+}
+function synergyCount(){
+ let n=0;
+ for(const c of state.cars){
+   if(state.plates.some(p=>{
+     const ds=(p.digits||[]).join('');
+     if(c.className==='Sport')return ['777','123','321'].includes(ds)||p.rarity==='Эпическая';
+     if(c.className==='Supercar')return ['Легендарная','Уникальная'].includes(p.rarity);
+     return ['77','97','99','177','197','199','777'].includes(p.region);
+   }))n++;
+ }
+ return n;
+}
+function garageView(){
+  return `<div class="card"><div class="titleRow"><b>Гараж</b><span>${state.cars.length}/${state.garageMax}</span></div>
+  ${state.cars.length?`<div class="grid">${state.cars.map(c=>`<div class="car"><div class="tag">${esc(c.rarity)}</div><div class="carIcon">${c.icon}</div><h3>${esc(c.name)}</h3><div class="meta">${esc(c.className)} · коллекционная</div><div class="price">${money(c.price)}</div></div>`).join('')}</div>`:'<div class="empty"><b>Гараж пуст</b>Открывай контейнеры, чтобы добавлять машины.</div>'}</div>
+  <div class="card"><div class="titleRow"><b>Бонус комплектов</b><span>номер + машина</span></div>
+    <div class="notice">Полноценные комплекты будут давать дополнительную ценность коллекции. Сейчас система отслеживает сам факт наличия редкого номера и машины.</div>
+    <div class="infoGrid"><div class="info"><b>Машин собрано</b><span>${state.cars.length}/${CARS.length*2} мест коллекции</span></div><div class="info"><b>Уникальных моделей</b><span>${new Set(state.cars.map(c=>c.name)).size}</span></div></div>
+  </div>
+  <div class="card"><div class="titleRow"><b>Коллекция машин</b><span>${CARS.length} моделей</span></div><div class="grid">${CARS.map(c=>`<div class="smallCard"><div style="font-size:30px">${c.icon}</div><h3>${esc(c.name)}</h3><p>${esc(c.rarity)} · ${money(c.price)}</p></div>`).join('')}</div></div>`;
+}
+function profileView(){
+  const value=state.plates.reduce((a,p)=>a+p.value,0)+state.cars.reduce((a,c)=>a+c.price,0);
+  const luckCost=state.luck<5?[180000,450000,900000,1700000][state.luck-1]:0;
+  return `<div class="card"><div class="titleRow"><b>Профиль коллекционера</b><span>Сезон 1</span></div>
+    <div class="stat"><b>Уровень</b><span>${state.level}</span></div>
+     <div class="stat"><b>Временная удача</b><span>${state.luckBoostSpins>0?'+'+state.luckBoost+' на '+state.luckBoostSpins+' прокруток':'нет'}</span></div>
+    <div class="stat"><b>Опыт</b><span>${state.xp}/100 XP</span></div>
+    <div class="stat"><b>Прокруток</b><span>${state.stats.spins}</span></div>
+    <div class="stat"><b>Потрачено</b><span>${money(state.stats.spent)}</span></div>
+    <div class="stat"><b>Заработано</b><span>${money(state.stats.earned)}</span></div>
+    <div class="stat"><b>Продано номеров</b><span>${state.stats.sold}</span></div>
+    <div class="stat"><b>Лучший номер</b><span>${esc(state.stats.bestText)} · ${money(state.stats.bestValue)}</span></div>
+    <div class="stat"><b>Коллекция</b><span>${money(value)}</span></div>
+  </div>
+  <div class="card"><div class="titleRow"><b>Улучшения</b><span>используй баланс</span></div>
+    <div class="upgrade"><div class="upgradeTop"><h3>🍀 Удача ${state.luck}/5</h3><span>${state.luck>=5?'MAX':money(luckCost)}</span></div><p>Немного повышает шансы на редкие результаты. Это постоянное игровое улучшение.</p><button onclick="buyLuck()" ${state.luck>=5||state.balance<luckCost?'disabled':''}>${state.luck>=5?'Максимум':'Повысить удачу'}</button></div>
+    <div class="upgrade"><div class="upgradeTop"><h3>🗃️ Хранилище +10</h3><span>${money(50000*(state.upgrade.storage+1))}</span></div><p>Больше места для коллекции, чтобы не продавать интересные номера сразу.</p><button onclick="buyStorage()" ${state.balance<50000*(state.upgrade.storage+1)?'disabled':''}>Расширить</button></div>
+    <div class="upgrade"><div class="upgradeTop"><h3>🚘 Гараж +3</h3><span>${money(100000*(state.upgrade.garage+1))}</span></div><p>Дополнительные места для автомобилей.</p><button onclick="buyGarage()" ${state.balance<100000*(state.upgrade.garage+1)?'disabled':''}>Расширить</button></div>
+  </div>
+  <div class="card"><div class="titleRow"><b>Достижения</b><span>${Object.keys(state.achClaimed).length}/${ACH.length}</span></div>
+    ${ACH.map(a=>{const done=!!state.achClaimed[a.id],ok=a.check(state);return `<div class="quest"><div class="qicon">${a.icon}</div><div><b>${esc(a.title)}</b><span>${esc(a.desc)} · награда ${esc(a.reward)}</span></div><button class="btn ${ok&&!done?'gold':''}" style="padding:7px 9px" onclick="claimAchievement('${a.id}')" ${done||!ok?'disabled':''}>${done?'✓':ok?'Забрать':'-'}</button></div>`}).join('')}
+  </div>
+  <div class="card"><div class="titleRow"><b>Управление</b><span>прототип</span></div>
+    <button class="btn red" style="width:100%" onclick="resetGame()">Сбросить прогресс</button>
+  </div>`;
+}
+function render(){
+  ensureDaily();
+  document.getElementById('balance').textContent=money(state.balance);
+  document.getElementById('level').textContent=state.level;
+  document.getElementById('luck').textContent=state.luck;
+  document.getElementById('keys').textContent=state.keys;
+  document.getElementById('xpbar').style.width=state.xp+'%';
+  document.getElementById('platesTab').classList.toggle('active',top==='plates');
+  document.getElementById('carsTab').classList.toggle('active',top==='cars');
+  ['spin','store','market','boxes','garage'].forEach(v=>{const el=document.getElementById('nav'+v[0].toUpperCase()+v.slice(1));if(el)el.classList.toggle('active',page===v)});
+  const main=document.getElementById('main');
+  if(page==='profile')main.innerHTML=profileView();
+  else if(top==='cars' && page==='spin')main.innerHTML=garageView();
+  else if(page==='spin')main.innerHTML=spinView();
+  else if(page==='store')main.innerHTML=storeView();
+  else if(page==='market')main.innerHTML=marketView();
+  else if(page==='boxes')main.innerHTML=boxesView();
+  else if(page==='garage')main.innerHTML=garageView();
+  else main.innerHTML=spinView();
+}
+render();
+</script>
+<script>
+window.addEventListener('error',function(e){
+  const main=document.getElementById('main');
+  if(main && !main.innerHTML.trim()){
+    main.innerHTML='<div style="padding:24px;text-align:center;color:#fff;background:#17171c;border:1px solid #3a252b;border-radius:22px;margin-top:20px"><b style="font-size:18px">Ошибка запуска</b><div style="margin-top:8px;color:#aaa;font-size:12px">Обнови страницу. Если ошибка повторяется, пришли этот экран.</div></div>';
+  }
+});
+</script>
+</body>
+</html>
