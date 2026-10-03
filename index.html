@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Номерок — тестовый билд</title>
+<script defer src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#080a10;--panel:#11141d;--panel2:#171b26;--line:#252b3a;--text:#f7f8fc;--muted:#8d95a7;--green:#62e68b;--blue:#6da7ff;--purple:#a878ff;--gold:#ffd35c;--red:#ff667d;--cyan:#56d9ff}
+html{background:var(--bg)}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#26345b 0,#0d111b 34%,#080a10 70%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;min-height:100vh}
+button{font:inherit;border:0;color:inherit;cursor:pointer}
+.app{max-width:520px;min-height:100vh;margin:auto;background:linear-gradient(180deg,rgba(10,13,21,.82),rgba(8,10,16,.98));padding-bottom:105px;overflow:hidden}
+.top{padding:calc(12px + env(safe-area-inset-top)) 16px 8px;background:linear-gradient(180deg,rgba(18,23,35,.96),rgba(12,15,23,.88));border-bottom:1px solid rgba(255,255,255,.06);position:relative}
+.top:after{content:"";position:absolute;left:18px;right:18px;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:.5}
+.header{display:flex;align-items:center;gap:11px}.menu{width:48px;height:48px;border-radius:16px;background:linear-gradient(145deg,#202838,#121722);border:1px solid #31394b;box-shadow:0 7px 20px #0008;display:grid;place-items:center;font-size:23px}.menu:active,.dots:active{transform:scale(.95)}
+.titleWrap{flex:1;min-width:0}.title{font-size:20px;font-weight:950;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.subtitle{color:var(--muted);font-size:11px;font-weight:750;margin-top:2px}
+.dots{width:44px;height:44px;border:1px solid #394154;border-radius:15px;background:#151a25;font-size:18px;color:#b9c1d1}
+.stats{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:8px;margin-top:13px}.pill{background:linear-gradient(145deg,#1b2130,#11151e);border:1px solid #2b3344;border-radius:15px;padding:10px 12px;display:flex;align-items:center;gap:8px;font-weight:900;font-size:14px;box-shadow:0 7px 18px #0004}.xpbar{width:48px;height:7px;background:#303646;border-radius:8px;overflow:hidden}.xpbar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#a6ffbe);border-radius:8px;width:35%;box-shadow:0 0 10px #62e68b66}.luck{font-size:15px}.balance{text-align:right;min-width:0}.balance small{display:block;color:#737d91;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px}.balance b{font-size:20px;white-space:nowrap;letter-spacing:-.4px}
+.tabs{display:flex;background:#10141d;border:1px solid #293143;border-radius:16px;padding:4px;margin:14px 16px 0;box-shadow:inset 0 1px 0 #ffffff08}.tab{flex:1;background:transparent;padding:11px;border-radius:12px;color:#778093;font-weight:900;font-size:15px}.tab.active{background:linear-gradient(135deg,#596780,#3b4559);color:white;box-shadow:0 5px 16px #0006}
+.content{padding:0 16px}.eventNew{margin-top:14px;border:1px solid #30456d;background:linear-gradient(135deg,#14243e,#111827);border-radius:17px;padding:11px 12px;display:flex;align-items:center;gap:11px;box-shadow:0 10px 28px #0005}.eventIconNew{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:23px;background:linear-gradient(145deg,#26436e,#182640);border:1px solid #3d5b8d;flex:none}.eventNew b{display:block;font-size:14px}.eventNew span{display:block;color:#8f9ab0;font-size:11px;line-height:1.35;margin-top:3px}
+.hero{margin-top:14px;background:linear-gradient(180deg,#141a27,#0e121b);border:1px solid #293346;border-radius:24px;padding:15px 13px 14px;box-shadow:0 18px 40px #0008;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-90px;top:-100px;background:#526cff22;filter:blur(10px)}.heroTitle{position:relative;color:#7e8aa0;font-size:11px;font-weight:950;letter-spacing:1.4px;text-align:center}.balanceBig{position:relative;text-align:center;color:#737d91;font-size:11px;margin-top:3px}.balanceBig b{color:#e9edf5;font-size:13px;margin-left:4px}
+#rolling{position:relative;text-align:center;padding:14px 2px 4px;min-height:275px;display:flex;flex-direction:column;align-items:center;justify-content:center}.empty{color:#778093;font-size:13px;line-height:1.5;padding:55px 20px}
+.plateNew{width:min(100%,520px);aspect-ratio:520/112;height:auto;min-height:0;background:linear-gradient(180deg,#ffffff 0%,#f4f5f5 48%,#dfe2e3 100%);color:#090b0d;border:3px solid #101216;border-radius:8px;box-shadow:0 0 0 2px #aeb3b8,0 10px 24px #0009,inset 0 1px 0 #fff,inset 0 -2px 4px #9ca2a555;display:grid;grid-template-columns:minmax(0,1fr) 16%;align-items:stretch;overflow:hidden;position:relative;transform:perspective(900px) rotateX(1deg)}.plateNew:before{content:"";position:absolute;inset:5px;border:1px solid #777b7e;border-radius:4px;pointer-events:none;z-index:3}.plateNew:after{content:"";position:absolute;inset:8px;background:linear-gradient(105deg,#fff7,#ffffff00 24%,#fff0 70%,#fff5);pointer-events:none;z-index:2}.plateChars{min-width:0;display:grid;grid-template-columns:.9fr 1fr 1fr 1fr .95fr .95fr;align-items:center;justify-content:center;column-gap:clamp(2px,.7vw,7px);font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif;font-weight:900;font-size:clamp(30px,10vw,66px);line-height:.9;letter-spacing:0;padding:4px 2.5%;text-shadow:0 1px 0 #fff,1px 2px 2px #0005;position:relative;z-index:4}.plateChars .pc{display:flex;align-items:center;justify-content:center;height:100%}.plateChars .pc.letter{font-weight:900}.plateChars .pc.digit{font-weight:900}.plateRegion{width:auto;border-left:2px solid #151719;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,sans-serif;position:relative;z-index:4}.plateRegion strong{font-size:clamp(20px,5.5vw,34px);line-height:1;font-weight:900;letter-spacing:-1px;text-shadow:0 1px 0 #fff,1px 2px 2px #0004}.rus{font-size:clamp(7px,2.1vw,11px);font-weight:900;margin-top:6px;display:flex;align-items:center;gap:4px}.flag{display:inline-block;width:22px;height:13px;border-radius:1px;background:linear-gradient(#fff 0 33%,#315bd8 33% 66%,#ef3948 66%);border:1px solid #777;box-shadow:0 1px 1px #0004}.plateScrew{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 15%,#aeb3b5 25%,#555 65%,#151515 100%);box-shadow:0 1px 2px #0008;z-index:5}.plateScrew.tl{left:10px;top:10px}.plateScrew.bl{left:10px;bottom:10px}.plateScrew.tr{right:10px;top:10px}.plateScrew.br{right:10px;bottom:10px}
+.region{color:#8892a4;font-weight:750;font-size:12px;margin-top:9px}.reason{display:inline-block;background:#1c2330;border:1px solid #30394b;color:#c8d0df;border-radius:999px;padding:5px 8px;margin:4px 2px 0;font-size:10px;font-weight:800}.valueBig{font-size:27px;font-weight:1000;letter-spacing:-.8px;margin-top:11px;background:linear-gradient(90deg,#fff,#b9d2ff);-webkit-background-clip:text;background-clip:text;color:transparent}.rarityBig{display:inline-block;margin-top:6px;padding:5px 10px;border-radius:999px;font-size:10px;font-weight:950;letter-spacing:.5px;text-transform:uppercase}.r-common{background:#252a34;color:#aeb6c5;border:1px solid #3a4250}.r-rare{background:#102d4a;color:#65b9ff;border:1px solid #28679c}.r-epic{background:#2a1647;color:#d19bff;border:1px solid #7042a2}.r-legendary{background:#44320b;color:#ffd55d;border:1px solid #9c7620}.r-unique{background:linear-gradient(90deg,#ffca45,#fff0a0,#ffca45);color:#241a04;border:1px solid #fff0a0;box-shadow:0 0 20px #ffd35c44}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.actionBtn{min-height:44px;border-radius:13px;padding:10px 12px;font-size:12px;font-weight:950;background:#1b212c;border:1px solid #30394a}.actionBtn.green{background:linear-gradient(135deg,#4fe77d,#28bf61);color:#06150c;border-color:#70f49b;box-shadow:0 7px 18px #36d86a22}.actionBtn.red{background:#241820;color:#ff8798;border-color:#4b2732}.actionBtn.blue{background:#16253a;color:#75baff;border-color:#2c557f}.actionBtn:disabled,.mainSpin:disabled{opacity:.42;pointer-events:none}
+.mainSpin{width:100%;margin-top:11px;background:linear-gradient(135deg,#62e68b,#2bc667);color:#06130b;border:1px solid #88f5a7;border-radius:15px;padding:15px;font-size:17px;font-weight:1000;box-shadow:0 9px 28px #35d86c35}.mainSpin:active{transform:scale(.985)}
+.blockTitle{margin:22px 3px 9px;font-size:16px;font-weight:950;letter-spacing:-.2px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.tile,.storageCard,.pack,.containerNew,.carNew,.questNew{background:linear-gradient(145deg,#151a24,#0f131b);border:1px solid #252d3d;border-radius:17px;box-shadow:0 9px 24px #0005}.tile{padding:13px}.tile b{font-size:13px}.tile p{margin:6px 0 0;color:#7f899b;font-size:11px;line-height:1.45}.storageCard{padding:12px;margin:9px 0}.storageCard .plateNew{margin:0 auto;width:100%}.storageCard .plateChars{font-size:clamp(22px,7vw,40px)}.storageCard .plateRegion strong{font-size:clamp(15px,4vw,23px)}.storageCard .rus{font-size:7px}.storageCard .plateScrew{width:5px;height:5px}.storageCard .plateScrew.tl{left:7px;top:7px}.storageCard .plateScrew.bl{left:7px;bottom:7px}.storageCard .plateScrew.tr{right:7px;top:7px}.storageCard .plateScrew.br{right:7px;bottom:7px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}.muted{color:#7f899b;font-size:11px}.sell{margin-top:10px;width:100%;background:#202633;border-radius:12px;padding:11px;font-weight:800}
+.albumNew{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}.regTile{height:47px;border-radius:10px;background:#111722;border:1px solid #252d3d;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#586376;font-size:9px;font-weight:900}.regTile b{font-size:12px;color:#8b95a8}.regTile.done{background:linear-gradient(145deg,#123d2a,#10271d);border-color:#2d8d58;color:#72ed9a}.regTile.done b{color:#9bffb8}.questNew{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:10px;padding:11px;margin:8px 0}.qicon{width:40px;height:40px;border-radius:12px;background:#202738;display:grid;place-items:center;font-size:21px}.questNew b{display:block;font-size:12px}.questNew span{display:block;color:#788397;font-size:10px;margin-top:3px}.questNew button{width:52px;height:34px;border-radius:10px;background:#202632;color:#646e80;font-weight:900}.questNew button.ok{background:#39d56c;color:#06130b}.marketTag{padding:4px 7px;border-radius:8px;background:#3b2e0e;color:#ffd45c;font-size:10px;font-weight:950}
+.containerNew,.carNew{padding:13px}.containerNew .emoji,.carEmoji{height:72px;border-radius:14px;background:radial-gradient(circle at 50% 25%,#31405a,#151b26 68%);display:grid;place-items:center;font-size:38px;border:1px solid #313c50}.containerNew h3,.carNew h3{font-size:13px;margin:9px 0 4px}.containerNew p,.carMeta{color:#7f899b;font-size:10px;line-height:1.45;margin:0}.containerNew strong{display:block;font-size:13px;margin-top:9px}.containerNew button{width:100%;margin-top:10px;padding:10px;border-radius:11px;background:linear-gradient(135deg,#547cff,#6a55e8);font-weight:900;font-size:11px}.containerNew button:disabled{opacity:.4}.carNew{min-width:0}.carEmoji{height:76px;font-size:36px}.statLine{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #202735;font-size:12px}.statLine:last-child{border-bottom:0}.statLine span{color:#9ca6b8;text-align:right;max-width:62%;overflow:hidden;text-overflow:ellipsis}.pack{padding:15px}.packTop{display:flex;justify-content:space-between;align-items:start}.packName{font-size:15px;font-weight:950}.packDesc{color:#818b9d;font-size:11px;line-height:1.35;margin-top:4px}.packPrice{font-weight:950;font-size:13px}.openBtn{width:100%;background:#36d66a;color:#061109;border-radius:13px;padding:13px;margin-top:12px;font-weight:950;font-size:13px}
+.modalNew{position:fixed;inset:0;background:rgba(3,5,9,.82);backdrop-filter:blur(12px);z-index:40;display:none;padding:16px;align-items:flex-end}.modalNew.show{display:flex}.sheetNew{width:100%;max-width:520px;max-height:92vh;overflow:auto;margin:auto;background:linear-gradient(180deg,#181e2a,#0f131b);border:1px solid #303a4d;border-radius:24px;padding:18px;box-shadow:0 25px 80px #000b}.sheetNew h2{margin:0 0 14px;font-size:20px}.closeNew{width:100%;margin-top:14px;background:#35d56b;color:#06120a;border-radius:14px;padding:13px;font-weight:950}.modal .content{padding-bottom:40px}
+.spinAnim{animation:spin .75s ease-in-out}@keyframes spin{0%{transform:scale(.94) rotate(-1deg);filter:brightness(.75)}45%{transform:scale(1.025) rotate(1deg);filter:brightness(1.35)}100%{transform:scale(1);filter:brightness(1)}}
+.toast{position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-150%);max-width:calc(100vw - 30px);background:#1d2431ee;border:1px solid #3a465b;border-radius:13px;padding:11px 15px;z-index:60;font-size:12px;font-weight:850;box-shadow:0 12px 30px #0009;transition:.25s;white-space:nowrap}.toast.show{transform:translate(-50%,0)}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:rgba(11,14,21,.94);backdrop-filter:blur(20px);border-top:1px solid #242b38;padding:7px 8px calc(8px + env(safe-area-inset-bottom));display:flex;gap:3px;z-index:20;box-shadow:0 -10px 30px #0008}.nav{flex:1;background:transparent;color:#677184;font-size:9px;font-weight:900;padding:5px 2px;border-radius:12px;line-height:1.4}.nav.active{color:white;background:#1c2330}.nav:first-line{font-size:18px}
+@media(max-width:360px){.balance b{font-size:17px}.plateChars{font-size:39px}.plateRegion{width:62px}.grid2{gap:7px}.albumNew{grid-template-columns:repeat(5,1fr)}}
+
+.onlineRankCard{grid-template-columns:28px 1fr!important;align-items:start}.onlineRankCard>div:nth-child(2){min-width:0}.miniPlate{width:100%;max-width:250px;height:57px;margin-top:8px;background:linear-gradient(180deg,#fefefe 0%,#e7e8e8 70%,#d7d9da 100%);border:2px solid #181a1c;border-radius:7px;box-shadow:0 4px 10px #0007,inset 0 0 0 1px #8f9498;display:flex;align-items:stretch;overflow:hidden;color:#111;position:relative}.miniPlate:after{content:"";position:absolute;inset:3px;border:1px solid #fff9;border-radius:4px;pointer-events:none}.miniChars{flex:1;display:grid;grid-template-columns:.9fr 1fr 1fr 1fr .95fr .95fr;column-gap:2px;align-items:center;justify-content:center;min-width:0;padding:0 5px}.miniChars span{display:flex;align-items:center;justify-content:center;font-family:"Arial Narrow",Impact,"Segoe UI",Arial,sans-serif;font-stretch:condensed;font-weight:900;font-size:28px;line-height:1;letter-spacing:2px;white-space:nowrap}.miniRegion{width:49px;border-left:1px solid #17191b;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,sans-serif;font-weight:800}.miniRegion strong{font-size:16px;line-height:1}.miniRegion div{font-size:7px;line-height:1;margin-top:4px;display:flex;align-items:center;gap:2px}.miniFlag{width:11px;height:7px}.emptyMini{display:flex;align-items:center;justify-content:center;background:#151a24;border-color:#293143;color:#778093;font-size:10px;box-shadow:none}.onlineRankCard strong{font-size:13px}.onlineRankCard span{font-size:10px;color:#7f899b}@media(max-width:360px){.miniPlate{max-width:220px}.miniChars span{font-size:25px;letter-spacing:1.5px}.miniRegion{width:45px}}
+.onlineDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#62e68b;box-shadow:0 0 8px #62e68b;margin-left:5px;vertical-align:middle}.onlineDot.off{background:#737d91;box-shadow:none}
+.uniqueReveal{position:fixed;inset:0;z-index:120;background:radial-gradient(circle at 50% 35%,#253b5c 0,#090c12 45%,#020305 100%);display:flex;align-items:center;justify-content:center;padding:22px;overflow:auto}.uniqueReveal .urBox{width:min(520px,100%);text-align:center}.uniqueReveal .urKicker{font-size:13px;font-weight:1000;letter-spacing:4px;color:#8ed7ff;text-transform:uppercase}.uniqueReveal .urTitle{font-size:38px;font-weight:1000;margin:8px 0 18px;letter-spacing:2px}.uniqueReveal .urSub{color:#aeb9c9;font-size:13px;margin:15px 0 20px;line-height:1.5}.uniqueReveal .urPlate{transform:scale(1.08);margin:0 auto 22px}.uniqueReveal .urClose{width:100%;border:0;border-radius:15px;padding:15px;background:#35d56b;color:#06120a;font-weight:1000;font-size:16px}.specialBadge{display:inline-block;margin:5px 0;padding:4px 8px;border-radius:8px;background:#183b59;color:#9fe0ff;font-size:10px;font-weight:1000}.playerMarketCard{border:1px solid #293548;background:linear-gradient(145deg,#151b26,#0e131b);border-radius:16px;padding:11px;margin:8px 0}.playerMarketCard .pmTop{display:flex;align-items:center;justify-content:space-between;gap:8px}.playerMarketCard .pmPrice{font-size:16px;font-weight:1000;color:#8cffad}.uniqueMini{border-color:#68c8ff;box-shadow:0 0 14px #3199ff55,inset 0 0 0 1px #68c8ff}.tradeSelect{width:100%;padding:11px;border-radius:11px;border:1px solid #30394a;background:#0d121a;color:#fff;margin-top:8px}
+
+.roomScreen{min-height:100%;padding-bottom:8px}.onlineRollBox{margin-top:12px;padding:12px;border-radius:18px;background:linear-gradient(145deg,#141b29,#0d121b);border:1px solid #2b3445;box-shadow:0 10px 28px #0005}.onlineRollBox #onlineRolling{min-height:245px;display:flex;flex-direction:column;justify-content:center}.onlineRollBox .plateNew{margin-top:4px}.onlineRollBox .valueBig{font-size:26px}.onlineRollBox .closeNew{width:100%}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <noscript><div style="padding:18px;background:#161b25;color:#fff;font-weight:800">Для игры нужен JavaScript. Включи JavaScript в настройках браузера и обнови страницу.</div></noscript>
+  <div class="top">
+    <div class="header">
+      <button class="menu" id="menuBtn">☰</button>
+      <div class="titleWrap"><div class="title">Номерок | Генератор номеров</div><div class="subtitle">коллекционер • сезон 1 <span id="onlineStatus"></span></div></div>
+      <button class="dots" id="versionBtn">•••</button>
+    </div>
+    <div class="stats">
+      <div class="pill">Ур. <span id="level">1</span><span class="xpbar"><i id="xpbar"></i></span></div>
+      <div class="pill luck">🍀 <span id="luck">1</span></div>
+      <div class="balance"><small>Баланс</small><b id="money">500 000 ₽</b></div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button id="numbersTab" class="tab active">Номера</button>
+    <button id="carsTab" class="tab">Машины</button>
+  </div>
+  <div id="content" class="content"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+<div class="bottom">
+  <button id="navRoll" class="nav active">🎰<br>Крутить</button>
+  <button id="navInv" class="nav">🔢<br>Хранилище</button>
+  <button id="navMarket" class="nav">💰<br>Рынок</button>
+  <button id="navBoxes" class="nav">📦<br>Контейнеры</button>
+  <button id="navGarage" class="nav">🚘<br>Гараж</button>
+</div>
+<div id="modal" class="modalNew"><div class="sheetNew" id="modalContent"></div></div>
+<script>
+(function(){
+  function showBootError(title, detail){
+    try{
+      document.body.innerHTML = '<div style="min-height:100vh;background:#080808;color:#fff;padding:28px 18px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"><h2 style="margin:0 0 12px">Номерок не запустился</h2><div style="color:#ff6b7a;font-weight:800;margin-bottom:10px">'+String(title).replace(/[&<>]/g,function(x){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[x]})+'</div><pre style="white-space:pre-wrap;color:#aaa;font-size:12px">'+String(detail||'').replace(/[&<>]/g,function(x){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[x]})+'</pre><p style="color:#777;font-size:12px">Сделай скрин этого экрана и отправь его мне.</p></div>';
+    }catch(e){}
+  }
+  window.__nomerokBootError=showBootError;
+  window.addEventListener('error',function(e){showBootError('JavaScript error', (e.message||'')+'\nСтрока: '+(e.lineno||'?')+'\nФайл: '+(e.filename||'?'));});
+  window.addEventListener('unhandledrejection',function(e){showBootError('Необработанная ошибка', e.reason&&e.reason.stack?e.reason.stack:String(e.reason||''));});
+})();
+</script>
+<script>
+'use strict';
+
+const COST=5000;
+const LETTERS=['А','В','Е','К','М','Н','О','Р','С','Т','У','Х'];
+const REGIONS=[
+['77','Москва'],['97','Москва'],['99','Москва'],['177','Москва'],['197','Москва'],['199','Москва'],['777','Москва'],
+['78','Санкт-Петербург'],['98','Санкт-Петербург'],['178','Санкт-Петербург'],['198','Санкт-Петербург'],
+['50','Московская область'],['90','Московская область'],['150','Московская область'],['190','Московская область'],
+['23','Краснодарский край'],['93','Краснодарский край'],['123','Краснодарский край'],['193','Краснодарский край'],
+['52','Нижегородская область'],['152','Нижегородская область'],['54','Новосибирская область'],['154','Новосибирская область'],
+['66','Свердловская область'],['96','Свердловская область'],['196','Свердловская область'],['16','Татарстан'],['116','Татарстан'],
+['61','Ростовская область'],['161','Ростовская область'],['62','Рязанская область'],['67','Смоленская область'],['40','Калужская область'],
+['43','Кировская область'],['46','Курская область'],['48','Липецкая область'],['55','Омская область'],['63','Самарская область'],
+['163','Самарская область'],['64','Саратовская область'],['72','Тюменская область'],['74','Челябинская область'],['174','Челябинская область'],
+['95','Чеченская Республика'],['26','Ставропольский край'],['42','Кемеровская область'],['70','Томская область'],['71','Тульская область'],
+['86','ХМАО'],['89','ЯНАО']
+];
+
+const CARS=[
+{name:'Lada Granta Sport',icon:'🚗',rarity:'Обычная',price:420000,cls:'Street',power:106,speed:180,handling:72},
+{name:'Lada Vesta Sport',icon:'🏎️',rarity:'Редкая',price:980000,cls:'Sport',power:145,speed:198,handling:82},
+{name:'Toyota Supra',icon:'🏁',rarity:'Эпическая',price:5200000,cls:'Sport',power:387,speed:250,handling:91},
+{name:'BMW M4',icon:'🚙',rarity:'Эпическая',price:6400000,cls:'Sport',power:510,speed:280,handling:93},
+{name:'Nissan GT-R',icon:'🚘',rarity:'Легендарная',price:9800000,cls:'Supercar',power:570,speed:315,handling:95},
+{name:'Porsche 911',icon:'🏎️',rarity:'Легендарная',price:12400000,cls:'Supercar',power:650,speed:320,handling:97},
+{name:'Lamborghini Huracán',icon:'🟨',rarity:'Уникальная',price:18500000,cls:'Supercar',power:640,speed:325,handling:98},
+{name:'Mercedes-AMG GT',icon:'🚘',rarity:'Легендарная',price:10900000,cls:'Supercar',power:585,speed:318,handling:96}
+];
+
+const BOXES=[
+{name:'Гаражный',icon:'📦',rarity:'Обычная',price:80000,ids:[0,0,0,1],desc:'стартовые машины'},
+{name:'Спортивный',icon:'🎁',rarity:'Редкая',price:450000,ids:[0,1,1,2,3],desc:'спорт и редкие модели'},
+{name:'Премиум',icon:'💎',rarity:'Эпическая',price:2000000,ids:[1,2,2,3,4,5,6,7],desc:'дорогие автомобили'}
+];
+
+const TRADERS=[
+{name:'Максим Коллекционер',icon:'🧑‍💼',desc:'три одинаковые цифры',mult:1.8,match:p=>new Set(p.digits).size===1},
+{name:'Илья Москва',icon:'🏙️',desc:'московские регионы',mult:1.55,match:p=>['77','97','99','177','197','199','777'].indexOf(p.region)>=0},
+{name:'Артём Зеркало',icon:'🪞',desc:'зеркальные комбинации',mult:1.7,match:p=>p.digits[0]===p.digits[2]||p.letters[0]===p.letters[2]},
+{name:'Денис Спорт',icon:'🏎️',desc:'007, 123 и 321',mult:1.9,match:p=>['007','123','321'].indexOf(p.digits.join(''))>=0},
+{name:'Сергей Серия',icon:'🔤',desc:'одинаковые буквы',mult:1.75,match:p=>new Set(p.letters).size===1}
+];
+
+const EVENTS=[
+{name:'Неделя красивых номеров',icon:'🔥',desc:'красивые комбинации ценятся выше',kind:'beauty'},
+{name:'Неделя Москвы',icon:'🏙️',desc:'московские регионы встречаются чаще',kind:'moscow'},
+{name:'Неделя спорта',icon:'🏎️',desc:'007, 123 и 321 получают бонус',kind:'sport'},
+{name:'Неделя зеркал',icon:'🪞',desc:'зеркальные цифры и буквы получают бонус',kind:'mirror'}
+];
+
+const COLLECTIONS=[
+{id:'sevens',icon:'7️⃣',name:'Три семёрки',desc:'собери 3 номера 777',reward:50000,check:s=>s.plates.filter(p=>p.digits.join('')==='777').length>=3},
+{id:'mirrors',icon:'🪞',name:'Зеркала',desc:'собери 5 зеркальных номеров',reward:75000,check:s=>s.plates.filter(p=>p.digits[0]===p.digits[2]||p.letters[0]===p.letters[2]).length>=5},
+{id:'moscow',icon:'🏙️',name:'Москва',desc:'открой 7 московских регионов',reward:100000,check:s=>s.regions.filter(r=>['77','97','99','177','197','199','777'].indexOf(r)>=0).length>=7},
+{id:'seq',icon:'🔢',name:'Последовательности',desc:'собери 4 номера 001, 007, 123 или 321',reward:60000,check:s=>s.plates.filter(p=>['001','007','123','321'].indexOf(p.digits.join(''))>=0).length>=4}
+];
+
+const DEFAULT={
+money:500000,level:1,xp:0,luck:1,keys:3,page:'roll',main:'numbers',
+plates:[],cars:[],last:null,regions:[],storageMax:20,garageMax:6,
+luckBoost:0,luckBoostSpins:0,stats:{spins:0,sold:0,spent:0,earned:0,bestValue:0,bestText:'—',bestRarity:'—'},
+daily:{date:'',claimed:false},claims:{},marketSold:0,specialClaimed:{},globalLocalClaims:{}
+};
+
+function copy(o){return JSON.parse(JSON.stringify(o))}
+function load(){
+  let s=null;
+  try{s=JSON.parse(localStorage.getItem('nomerok_github_v3')||'null')}catch(e){}
+  s=Object.assign(copy(DEFAULT),s||{});
+  s.stats=Object.assign(copy(DEFAULT.stats),s.stats||{});
+  s.daily=Object.assign(copy(DEFAULT.daily),s.daily||{});
+  s.claims=s.claims||{};s.specialClaimed=s.specialClaimed||{};s.globalLocalClaims=s.globalLocalClaims||{};
+  s.plates=Array.isArray(s.plates)?s.plates:[];
+  s.cars=Array.isArray(s.cars)?s.cars:[];
+  s.regions=Array.isArray(s.regions)?s.regions:[];
+  return s;
+}
+let S=load(), rolling=false;
+
+/* ONLINE: P2P-комнаты через PeerJS. Supabase больше не используется. */
+const ONLINE_CONFIG={host:'0.peerjs.com',port:443,path:'/',secure:true};
+let ONLINE={peer:null,room:null,player:null,players:[],events:[],chat:[],conns:{},host:false,hostConn:null,claimedKeys:{},spinning:false};
+
+function onlineLocalId(){
+  let id='';
+  try{id=localStorage.getItem('nomerok_online_id')||''}catch(e){}
+  if(!id){
+    if(window.crypto&&crypto.randomUUID)id=crypto.randomUUID();
+    else{let a=new Uint32Array(4);crypto.getRandomValues(a);id=Array.from(a).map(x=>x.toString(36)).join('').slice(0,20)}
+    try{localStorage.setItem('nomerok_online_id',id)}catch(e){}
+  }
+  return id;
+}
+
+/* GLOBAL REGISTRY: единый реестр владельцев номеров для всей игры. */
+const GLOBAL_CONFIG={
+  url:'https://rscoxucpnnciziadqdd.supabase.co',
+  key:'sb_publishable_ggThDkAtzzDZbj0Hn8E2eQ_J4ptTUuF',
+  timeout:1500
+};
+let GLOBAL_BUSY=false;
+let GLOBAL_OFFLINE=false;
+function globalKey(p){
+  if(!p)return '';
+  if(p.specialId)return 'SPECIAL:'+p.specialId;
+  return [p.letters&&p.letters.join('')||'',p.digits&&p.digits.join('')||'',String(p.region||'')].join('|').toUpperCase();
+}
+function globalFetch(path,opts){
+  opts=opts||{}; let ctl=window.AbortController?new AbortController():null;
+  if(ctl)opts.signal=ctl.signal;
+  opts.headers=Object.assign({'apikey':GLOBAL_CONFIG.key,'Authorization':'Bearer '+GLOBAL_CONFIG.key,'Content-Type':'application/json'},opts.headers||{});
+  let timer=setTimeout(function(){if(ctl)ctl.abort()},GLOBAL_CONFIG.timeout);
+  return fetch(GLOBAL_CONFIG.url+path,opts).finally(function(){clearTimeout(timer)});
+}
+async function claimGlobalPlate(p){
+  let key=globalKey(p); if(!key)throw new Error('Не удалось определить номер.');
+  let body={plate_key:key,owner_id:onlineLocalId(),owner_name:onlineName()||'Игрок',plate:onlinePlate(p),is_special:!!p.specialId};
+  let r;
+  try{r=await globalFetch('/rest/v1/global_plates',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(body)})}
+  catch(e){
+    /* Если внешний реестр временно недоступен, не блокируем обычную игру.
+       В этом режиме уникальность гарантируется в этом браузере и отдельно внутри онлайн-комнаты. */
+    GLOBAL_OFFLINE=true;
+    S.globalLocalClaims=S.globalLocalClaims||{};
+    if(S.globalLocalClaims[key])return false;
+    S.globalLocalClaims[key]=true;
+    save();
+    return true;
+  }
+  if(r.status===409){
+    // Номер уже занят в общем реестре — сразу пробуем другую комбинацию.
+    // Не делаем дополнительный GET-запрос, чтобы iPhone не зависал на ожидании сети.
+    return false;
+  }
+  if(!r.ok){let txt='';try{txt=await r.text()}catch(e){};throw new Error('Глобальный реестр отклонил номер ('+r.status+').')}
+  return true;
+}
+async function releaseGlobalPlate(p){
+  let key=globalKey(p);if(!key)return true;
+  try{let r=await globalFetch('/rest/v1/global_plates?plate_key=eq.'+encodeURIComponent(key)+'&owner_id=eq.'+encodeURIComponent(onlineLocalId()),{method:'DELETE',headers:{'Prefer':'return=minimal'}});return r.ok}catch(e){return false}
+}
+async function transferGlobalPlate(p,currentOwnerId,newOwnerId,newOwnerName){
+  let key=globalKey(p);if(!key||!currentOwnerId||!newOwnerId)return false;
+  try{let r=await globalFetch('/rest/v1/global_plates?plate_key=eq.'+encodeURIComponent(key)+'&owner_id=eq.'+encodeURIComponent(currentOwnerId),{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({owner_id:newOwnerId,owner_name:newOwnerName||'Игрок'})});return r.ok}catch(e){return false}
+}
+
+function onlineName(){try{return localStorage.getItem('nomerok_online_name')||''}catch(e){return ''}}
+function onlineSaveName(n){try{localStorage.setItem('nomerok_online_name',String(n||'').trim().slice(0,18))}catch(e){}}
+function onlineCode(){let c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r='',a=new Uint32Array(6);crypto.getRandomValues(a);for(let i=0;i<6;i++)r+=c[a[i]%c.length];return r}
+function onlinePlate(p){return{text:p.text,value:p.value,rarity:p.rarity,region:p.region,regionName:p.regionName||'',letters:p.letters||[],digits:p.digits||[],findings:p.findings||[],specialId:p.specialId||null}}
+function miniPlate(p){
+  if(!p)return '<div class="miniPlate emptyMini">Нет номера</div>';
+  let text=String(p.text||'').toUpperCase();
+  let first=text.slice(0,1),digits=text.slice(1,4),last=text.slice(4);
+  if(Array.isArray(p.letters)&&p.letters.length===3)first=p.letters[0],last=String(p.letters[1]||'')+String(p.letters[2]||'');
+  if(Array.isArray(p.digits)&&p.digits.length===3)digits=p.digits.join('');
+  return '<div class="miniPlate"><div class="miniChars"><span>'+esc(first)+'</span><span>'+esc(digits.charAt(0))+'</span><span>'+esc(digits.charAt(1))+'</span><span>'+esc(digits.charAt(2))+'</span><span>'+esc(last.charAt(0))+'</span><span>'+esc(last.charAt(1))+'</span></div><div class="miniRegion"><strong>'+esc(p.region||'')+'</strong><div>RUS <i class="flag miniFlag"></i></div></div></div>';
+}
+function peerOptions(){return {host:ONLINE_CONFIG.host,port:ONLINE_CONFIG.port,path:ONLINE_CONFIG.path,secure:ONLINE_CONFIG.secure,debug:0,config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}}}
+let PEER_LOADING=null;
+function loadPeerJS(){
+  if(typeof Peer!=='undefined')return Promise.resolve(true);
+  if(PEER_LOADING)return PEER_LOADING;
+  PEER_LOADING=new Promise(function(resolve,reject){
+    let done=false,i=0;
+    const urls=[
+      'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js',
+      'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js'
+    ];
+    function finish(ok,err){
+      if(done)return;
+      done=true;
+      PEER_LOADING=null;
+      if(ok)resolve(true);else reject(err||new Error('Не удалось загрузить модуль онлайн-игры.'));
+    }
+    function next(){
+      if(typeof Peer!=='undefined')return finish(true);
+      if(i>=urls.length)return finish(false,new Error('Модуль онлайн-игры недоступен. Обычная игра работает без него.'));
+      let sc=document.createElement('script');
+      sc.src=urls[i++];
+      sc.async=true;
+      let settled=false;
+      let timer=setTimeout(function(){
+        if(settled)return;
+        settled=true;
+        try{sc.remove()}catch(e){}
+        next();
+      },8000);
+      sc.onload=function(){
+        if(settled)return;
+        settled=true;
+        clearTimeout(timer);
+        if(typeof Peer!=='undefined')finish(true);else next();
+      };
+      sc.onerror=function(){
+        if(settled)return;
+        settled=true;
+        clearTimeout(timer);
+        try{sc.remove()}catch(e){}
+        next();
+      };
+      document.head.appendChild(sc);
+    }
+    next();
+  });
+  return PEER_LOADING;
+}
+function peerCreate(id){
+  if(typeof Peer==='undefined')throw new Error('Модуль онлайн-игры не загрузился. Проверь интернет и открой «Играть вместе» ещё раз.');
+  return id?new Peer(id,peerOptions()):new Peer(peerOptions());
+}
+function waitPeerOpen(peer,timeout){return new Promise(function(resolve,reject){let done=false,t=setTimeout(function(){if(done)return;done=true;try{peer.destroy()}catch(e){}reject(new Error('Сервер комнат не ответил за '+Math.round(timeout/1000)+' секунд.'))},timeout);peer.once('open',function(id){if(done)return;done=true;clearTimeout(t);resolve(id)});peer.once('error',function(e){if(done)return;done=true;clearTimeout(t);try{peer.destroy()}catch(x){}reject(e)})})}
+function peerError(e){
+  let t=e&&e.type||'';
+  if(t==='unavailable-id')return 'Этот код комнаты уже занят. Попробуй создать комнату ещё раз.';
+  if(t==='peer-unavailable')return 'Комната не найдена или хозяин уже вышел. Проверь код из 6 символов.';
+  if(t==='network'||t==='server-error'||t==='socket-error'||t==='socket-closed')return 'Сервер комнат недоступен. Проверь интернет и попробуй ещё раз.';
+  if(t==='browser-incompatible')return 'Этот браузер не поддерживает P2P-соединение.';
+  return e&&e.message?e.message:String(e);
+}
+function onlineState(){return {players:ONLINE.players,events:ONLINE.events,chat:ONLINE.chat||[],market:ONLINE.market||[],uniqueClaims:ONLINE.uniqueClaims||{},claimedKeys:ONLINE.claimedKeys||{}}}
+function safeSend(conn,msg){if(!conn)return false;try{if(conn.open){conn.send(msg);return true}}catch(e){}return false}
+function broadcastState(){
+  if(!ONLINE.host)return;
+  let msg={type:'state',state:onlineState()};
+  Object.keys(ONLINE.conns).forEach(function(k){safeSend(ONLINE.conns[k],msg)});
+  renderOnline();
+}
+function addEvent(p){
+  if(!p||!p.drop)return;
+  ONLINE.events.push({player_name:p.name||'Игрок',message:(p.name||'Игрок')+' выбил '+p.drop.text+' · '+p.drop.rarity+' · '+money(p.drop.value),plate:onlinePlate(p.drop),created_at:Date.now()});
+  ONLINE.events=ONLINE.events.slice(-40);
+}
+function addChat(name,text){
+  text=String(text||'').trim().slice(0,220);if(!text)return;
+  ONLINE.chat=ONLINE.chat||[];ONLINE.chat.push({name:String(name||'Игрок').slice(0,18),text:text,created_at:Date.now()});ONLINE.chat=ONLINE.chat.slice(-60);
+}
+function setupHostConnection(conn){
+  ONLINE.conns[conn.peer]=conn;
+  conn.on('open',function(){safeSend(conn,{type:'state',state:onlineState()})});
+  conn.on('data',function(msg){
+    if(!msg||typeof msg!=='object')return;
+    if(msg.type==='join'){
+      let name=String(msg.name||'Игрок').trim().slice(0,18)||'Игрок';
+      if(!ONLINE.players.find(function(x){return x.user_id===conn.peer})){
+        if(ONLINE.players.length>=6){safeSend(conn,{type:'full'});try{conn.close()}catch(e){};return}
+        ONLINE.players.push({user_id:conn.peer,local_id:String(msg.local_id||''),name:name,spins:0,best_value:0,best_plate:null,last_plate:null,collection_value:0});
+        addChat('Система',name+' присоединился к комнате 👋');
+      }
+      safeSend(conn,{type:'state',state:onlineState()});
+      broadcastState();
+    }else if(msg.type==='drop'){
+      let pl=ONLINE.players.find(function(x){return x.user_id===conn.peer});
+      if(!pl||!msg.plate)return;
+      let p=msg.plate;
+      let pkey=globalKey(p);
+      if(pkey&&ONLINE.claimedKeys[pkey]){safeSend(conn,{type:'plate-rejected',plate_key:pkey});return}
+      if(pkey)ONLINE.claimedKeys[pkey]=conn.peer;
+      if(p.specialId){if(ONLINE.uniqueClaims[p.specialId]){safeSend(conn,{type:'special-rejected',specialId:p.specialId});return}ONLINE.uniqueClaims[p.specialId]=conn.peer;}
+      pl.spins=Number(pl.spins||0)+1;
+      pl.collection_value=Number(pl.collection_value||0)+Number(p.value||0);
+      pl.last_plate=onlinePlate(p);
+      if(Number(p.value||0)>Number(pl.best_value||0)){pl.best_value=Number(p.value||0);pl.best_plate=onlinePlate(p)}
+      addEvent({name:pl.name,drop:p});
+      broadcastState();
+    }else if(msg.type==='chat'){
+      let pl=ONLINE.players.find(function(x){return x.user_id===conn.peer});
+      let name=pl?pl.name:'Игрок';
+      addChat(name,msg.text);broadcastState();
+    }else if(msg.type==='market-list'){let it=msg.item;if(it&&it.seller_id===conn.peer){ONLINE.market.push(it);broadcastState()}}else if(msg.type==='market-buy'){let it=ONLINE.market.find(function(x){return x.id===msg.listing_id});if(it&&msg.buyer_id===conn.peer)completePlayerSale(it,msg.buyer_id)}else if(msg.type==='market-cancel'){let it=ONLINE.market.find(function(x){return x.id===msg.listing_id});if(it&&it.seller_id===conn.peer){ONLINE.market=ONLINE.market.filter(function(x){return x.id!==it.id});broadcastState()}}else if(msg.type==='leave'){
+      removeHostPlayer(conn.peer);
+    }
+  });
+  conn.on('close',function(){removeHostPlayer(conn.peer)});
+  conn.on('error',function(){});
+}
+function removeHostPlayer(id){
+  let pl=ONLINE.players.find(function(x){return x.user_id===id});
+  if(pl)addChat('Система',pl.name+' вышел из комнаты');
+  delete ONLINE.conns[id];
+  ONLINE.players=ONLINE.players.filter(function(x){return x.user_id!==id});
+  broadcastState();
+}
+async function createRoom(name){
+  await loadPeerJS();
+  name=String(name||'').trim().slice(0,18)||'Игрок';onlineSaveName(name);
+  if(ONLINE.peer)await leaveRoom();
+  let tries=0,last=null;
+  while(tries<5){
+    tries++;let code=onlineCode(),peer=peerCreate(code);
+    try{
+      await waitPeerOpen(peer,9000);
+      ONLINE.peer=peer;ONLINE.host=true;ONLINE.room={code:code};ONLINE.player={user_id:peer.id,local_id:onlineLocalId(),name:name,spins:0,best_value:0,best_plate:null,last_plate:null,collection_value:0};ONLINE.players=[ONLINE.player];ONLINE.events=[];ONLINE.market=[];ONLINE.uniqueClaims={};ONLINE.claimedKeys={};ONLINE.spinning=false;ONLINE.chat=[{name:'Система',text:'Комната создана. Можно играть и общаться 👋',created_at:Date.now()}];ONLINE.conns={};
+      peer.on('connection',setupHostConnection);
+      peer.on('disconnected',function(){try{peer.reconnect()}catch(e){}});
+      peer.on('error',function(e){if(e&&e.type!=='unavailable-id')toast('Онлайн: '+peerError(e))});
+      renderOnline();return;
+    }catch(e){last=e;if(e&&e.type==='unavailable-id')continue;throw new Error('Не удалось создать комнату: '+peerError(e))}
+  }
+  throw new Error('Не удалось создать свободный код комнаты: '+peerError(last));
+}
+async function joinRoom(code,name){
+  await loadPeerJS();
+  code=String(code||'').trim().toUpperCase();name=String(name||'').trim().slice(0,18)||'Игрок';
+  if(code.length!==6)throw new Error('Код комнаты должен состоять из 6 символов.');
+  onlineSaveName(name);if(ONLINE.peer)await leaveRoom();
+  let peer=peerCreate();
+  try{
+    await waitPeerOpen(peer,9000);
+    ONLINE.peer=peer;ONLINE.host=false;ONLINE.room={code:code};ONLINE.players=[];ONLINE.events=[];ONLINE.market=[];ONLINE.uniqueClaims={};ONLINE.claimedKeys={};ONLINE.spinning=false;ONLINE.chat=[];
+    let conn=peer.connect(code,{reliable:true,metadata:{name:name,local_id:onlineLocalId()}});ONLINE.hostConn=conn;
+    await new Promise(function(resolve,reject){
+      let done=false,t=setTimeout(function(){if(done)return;done=true;try{conn.close()}catch(e){};reject(new Error('Хозяин комнаты не ответил. Проверь код.'))},9000);
+      conn.on('open',function(){if(done)return;done=true;clearTimeout(t);safeSend(conn,{type:'join',name:name,local_id:onlineLocalId()});resolve()});
+      conn.on('error',function(e){if(done)return;done=true;clearTimeout(t);reject(new Error(peerError(e)))});
+      conn.on('data',function(msg){
+        if(!msg||typeof msg!=='object')return;
+        if(msg.type==='full'){toast('Комната заполнена (6/6)');return}
+        if(msg.type==='host-left'){toast('Хозяин закрыл комнату');return}if(msg.type==='plate-rejected'){toast('Этот конкретный номер уже выбил другой игрок. Попробуй ещё раз.');return}if(msg.type==='special-rejected'){let i=S.plates.findIndex(function(x){return x.specialId===msg.specialId});if(i>=0){S.plates.splice(i,1);S.money+=COST;S.stats.spent=Math.max(0,S.stats.spent-COST);delete S.specialClaimed[msg.specialId];save();render();toast('Этот уникальный номер уже забрали в комнате. ₽ возвращены.')}return}
+        if(msg.type==='market-sale'){let it=msg.item;if(!it)return;if(it.buyer_id===ONLINE.peer.id){if(S.money<it.price){toast('Не хватает ₽ для покупки');return}S.money-=it.price;let p=Object.assign({},it.plate,{id:Date.now()+Math.random()});S.plates.unshift(p);S.plates=S.plates.slice(0,S.storageMax);save();render();toast('Куплен номер '+p.text+' за '+money(it.price))}if(it.seller_id===ONLINE.peer.id){let i=S.plates.findIndex(function(x){return String(x.id)===String(it.plate.id)});if(i>=0){S.plates.splice(i,1);S.money+=it.price;save();render();toast('Твой номер продан за '+money(it.price))}}return}if(msg.type==='state'&&msg.state){ONLINE.players=msg.state.players||[];ONLINE.events=msg.state.events||[];ONLINE.chat=msg.state.chat||[];ONLINE.market=msg.state.market||[];ONLINE.uniqueClaims=msg.state.uniqueClaims||{};ONLINE.claimedKeys=msg.state.claimedKeys||{};ONLINE.player=ONLINE.players.find(function(x){return x.user_id===ONLINE.peer.id})||ONLINE.player;renderOnline()}
+      });
+      conn.on('close',function(){if(ONLINE.room&&!ONLINE.host)toast('Хозяин закрыл комнату')});
+    });
+    renderOnline();
+  }catch(e){try{peer.destroy()}catch(x){};ONLINE.peer=null;ONLINE.room=null;throw new Error('Не удалось войти: '+peerError(e))}
+}
+async function refreshRoom(){renderOnline()}
+async function subscribeRoom(){}
+async function syncResult(p){
+  if(!ONLINE.room||!ONLINE.player||!ONLINE.peer)return;
+  if(ONLINE.host){
+    if(p.specialId)ONLINE.uniqueClaims[p.specialId]=ONLINE.peer.id;
+    ONLINE.player.spins=Number(ONLINE.player.spins||0)+1;
+    ONLINE.player.collection_value=Number(ONLINE.player.collection_value||0)+Number(p.value||0);
+    ONLINE.player.last_plate=onlinePlate(p);
+    if(Number(p.value||0)>Number(ONLINE.player.best_value||0)){ONLINE.player.best_value=Number(p.value||0);ONLINE.player.best_plate=onlinePlate(p)}
+    addEvent({name:ONLINE.player.name,drop:p});broadcastState();
+  }else if(ONLINE.hostConn){
+    if(!safeSend(ONLINE.hostConn,{type:'drop',plate:onlinePlate(p)}))toast('Не удалось передать результат другу.');
+  }
+}
+async function onlineSpin(){
+  if(!ONLINE.room||!ONLINE.player)return;
+  if(ONLINE.spinning){toast('Прокрутка уже идёт');return}
+  if(S.money<COST){toast('Недостаточно виртуальных ₽');return}
+  ONLINE.spinning=true;
+  let box=document.getElementById('onlineRolling');
+  if(!box){renderOnline();box=document.getElementById('onlineRolling');}
+  S.money-=COST;S.stats.spent+=COST;save();
+  let n=0,total=20,finalPlate=null,done=false;
+  let timer=null;
+  function draw(){
+    let q=generate();
+    if(box)box.innerHTML=plate(q)+info(q);
+    n++;
+    if(n<total){timer=setTimeout(draw,55+n*5);return;}
+    finish();
+  }
+  async function finish(){
+    if(done)return;done=true;if(timer)clearTimeout(timer);
+    try{
+      let p=null,claimed=false;
+      for(let attempt=0;attempt<20&&!claimed;attempt++){
+        p=generate();
+        let key=globalKey(p);
+        if(ONLINE.claimedKeys&&ONLINE.claimedKeys[key])continue;
+        claimed=await claimGlobalPlate(p);
+      }
+      if(!claimed){
+        S.money+=COST;S.stats.spent=Math.max(0,S.stats.spent-COST);save();renderOnline();ONLINE.spinning=false;toast('Не удалось получить свободный номер. ₽ возвращены.');return;
+      }
+      finalPlate=p;
+      S.last=p;S.stats.spins++;S.stats.bestValue=Math.max(S.stats.bestValue,p.value);
+      if(p.value===S.stats.bestValue){S.stats.bestText=p.text+' '+p.region;S.stats.bestRarity=p.rarity}
+      if(!S.regions.includes(p.region))S.regions.push(p.region);
+      xp(p.rarity==='Уникальная'?45:p.rarity==='Легендарная'?32:p.rarity==='Эпическая'?20:p.rarity==='Редкая'?12:5);
+      if(S.luckBoostSpins>0){S.luckBoostSpins--;if(!S.luckBoostSpins)S.luckBoost=0}
+      S.plates.unshift(p);S.plates=S.plates.slice(0,S.storageMax);
+      if(p.specialId)S.specialClaimed[p.specialId]=true;
+      if(ONLINE.host)ONLINE.claimedKeys[globalKey(p)]=ONLINE.peer.id;
+      save();
+      await syncResult(p);
+      render();renderOnline();
+      ONLINE.spinning=false;if(isSpecial(p))showUniqueReveal(p,function(){renderOnline()});else toast('Номер выбит: '+p.text);
+    }catch(err){
+      S.money+=COST;S.stats.spent=Math.max(0,S.stats.spent-COST);save();render();renderOnline();
+      ONLINE.spinning=false;toast(err&&err.message?err.message:'Ошибка онлайн-прокрутки. ₽ возвращены.');
+    }
+  }
+  draw();
+}
+function sendOnlineChat(){
+  let input=document.getElementById('onlineChatInput');if(!input)return;
+  let text=String(input.value||'').trim().slice(0,220);if(!text)return;
+  if(ONLINE.host){addChat(ONLINE.player.name,text);input.value='';broadcastState();}
+  else if(ONLINE.hostConn&&safeSend(ONLINE.hostConn,{type:'chat',text:text})){input.value='';}
+  else toast('Соединение с хозяином ещё не готово.');
+}
+function onlineMarketHTML(){
+  let arr=ONLINE.market||[];
+  if(!arr.length)return '<div class="muted">Пока никто ничего не выставил.</div>';
+  return arr.map(function(x){let mine=x.seller_id===ONLINE.peer.id;return '<div class="playerMarketCard"><div class="pmTop"><b>'+esc(x.plate.text||'Номер')+'</b><span class="marketTag">'+esc(x.seller_name||'Игрок')+'</span></div><div class="muted">'+esc(x.plate.rarity||'')+' · регион '+esc(x.plate.region||'')+'</div><div class="pmPrice">'+money(x.price)+'</div>'+(mine?'<button class="actionBtn red" style="width:100%;margin-top:8px" data-canceltrade="'+esc(x.id)+'">Снять с продажи</button>':'<button class="actionBtn green" style="width:100%;margin-top:8px" data-buytrade="'+esc(x.id)+'">Купить</button>')+'</div>'}).join('');
+}
+function listPlayerPlate(id,price){
+  if(!ONLINE.room)return;price=Math.round(Number(price)||0);if(price<=0){toast('Укажи цену');return}let p=S.plates.find(function(x){return String(x.id)===String(id)});if(!p){toast('Номер не найден');return}if((ONLINE.market||[]).some(function(x){return String(x.plate.id)===String(p.id)})){toast('Этот номер уже выставлен');return}let item={id:String(Date.now())+Math.random().toString(36).slice(2),seller_id:ONLINE.peer.id,seller_name:ONLINE.player.name,plate:onlinePlate(p),price:price};if(ONLINE.host){ONLINE.market.push(item);broadcastState()}else if(ONLINE.hostConn) safeSend(ONLINE.hostConn,{type:'market-list',item:item});toast('Номер выставлен на рынок');renderOnline();}
+function buyPlayerPlate(id){let item=(ONLINE.market||[]).find(function(x){return x.id===id});if(!item||item.seller_id===ONLINE.peer.id)return;if(S.money<item.price){toast('Не хватает виртуальных ₽');return}if(ONLINE.host){completePlayerSale(item,ONLINE.peer.id)}else if(ONLINE.hostConn)safeSend(ONLINE.hostConn,{type:'market-buy',listing_id:id,buyer_id:ONLINE.peer.id});}
+async function completePlayerSale(item,buyerId){
+  let buyer=ONLINE.players.find(function(x){return x.user_id===buyerId}),seller=ONLINE.players.find(function(x){return x.user_id===item.seller_id});
+  if(!buyer||!seller)return;
+  let sellerLocalId=seller.local_id||'';
+  let buyerLocalId=buyer.local_id||'';
+  if(!sellerLocalId||!buyerLocalId||!(await transferGlobalPlate(item.plate,sellerLocalId,buyerLocalId,buyer.name))){toast('Не удалось передать номер. Сделка отменена.');return}
+
+  ONLINE.market=ONLINE.market.filter(function(x){return x.id!==item.id});
+  let sale={type:'market-sale',item:item,buyer_id:buyerId,seller_id:item.seller_id};
+  Object.keys(ONLINE.conns).forEach(function(k){safeSend(ONLINE.conns[k],sale)});
+  if(buyerId===ONLINE.peer.id){
+    if(S.money<item.price){toast('Не хватает ₽ для покупки');return}
+    S.money-=item.price;let p=Object.assign({},item.plate,{id:Date.now()+Math.random()});S.plates.unshift(p);S.plates=S.plates.slice(0,S.storageMax);save();render();toast('Куплен номер '+p.text+' за '+money(item.price));
+  }
+  if(item.seller_id===ONLINE.peer.id){
+    let i=S.plates.findIndex(function(x){return String(x.id)===String(item.plate.id)});
+    if(i>=0){S.plates.splice(i,1);S.money+=item.price;save();render();toast('Твой номер продан за '+money(item.price));}
+  }
+  renderOnline();
+}
+function cancelPlayerListing(id){if(ONLINE.host){ONLINE.market=ONLINE.market.filter(function(x){return x.id!==id});broadcastState()}else if(ONLINE.hostConn)safeSend(ONLINE.hostConn,{type:'market-cancel',listing_id:id});}
+function sendPlayerTrade(){let sel=document.getElementById('tradePlate'),price=document.getElementById('tradePrice');if(!sel||!price)return;listPlayerPlate(sel.value,price.value);}
+function rankingHTML(){
+  return ONLINE.players.slice().sort(function(a,b){return (b.best_value||0)-(a.best_value||0)}).map(function(p,i){
+    let b=p.best_plate,last=p.last_plate||b;
+    return '<div class="questNew onlineRankCard" style="grid-template-columns:30px 1fr"><div style="font-size:19px;font-weight:1000;text-align:center">'+(i+1)+'</div><div><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b>'+esc(p.name)+(p.user_id===ONLINE.player.user_id?' · вы':'')+'</b><strong style="white-space:nowrap">'+(b?money(p.best_value):'—')+'</strong></div><div class="muted" style="margin-top:4px">'+(p.spins||0)+' прокруток · коллекция '+money(p.collection_value||0)+'</div>'+(last?'<div style="margin-top:8px">Последний: '+miniPlate(last)+'</div>':'<div class="muted" style="margin-top:7px">ещё не выбивал номер</div>')+'<span style="display:block;margin-top:5px">Лучший: '+(b?esc(b.rarity):'—')+'</span></div></div>';
+  }).join('')||'<div class="empty">Пока игроков нет.</div>';
+}
+function onlineEventsHTML(){
+  return ONLINE.events.slice().reverse().map(function(e){return '<div class="statLine"><b>'+esc(e.player_name||'Игрок')+'</b><span>'+esc(e.message||'Новое событие')+'</span></div>'}).join('');
+}
+function onlineChatHTML(){
+  return (ONLINE.chat||[]).slice(-30).map(function(c){let mine=ONLINE.player&&c.name===ONLINE.player.name;return '<div style="padding:7px 9px;margin:4px 0;border-radius:12px;background:'+(mine?'#173d29':'#111823')+';border:1px solid '+(mine?'#245b3b':'#202b3b')+'"><div style="font-size:11px;font-weight:900">'+esc(c.name)+(mine?' · вы':'')+'</div><div style="font-size:13px;color:#dce3ef;line-height:1.35;margin-top:2px;word-break:break-word">'+esc(c.text)+'</div></div>'}).join('')||'<div class="muted">Пока сообщений нет. Напишите что-нибудь 👋</div>';
+}
+function renderOnline(){
+  let m=document.getElementById('modalContent');if(!m||!document.getElementById('modal').classList.contains('show'))return;
+  if(!ONLINE.room){
+    m.innerHTML='<h2>👥 Игра с друзьями</h2><div class="muted" style="margin-bottom:10px">P2P-комната до 6 игроков. Один создаёт комнату и отправляет код друзьям.</div><input id="onName" placeholder="Твоё имя" value="'+esc(onlineName())+'" style="width:100%;padding:13px;border-radius:12px;border:1px solid #30394a;background:#0d121a;color:#fff;outline:0"><button class="closeNew" id="onCreate">Создать комнату</button><div style="text-align:center;color:#687286;margin:10px 0">или</div><input id="onCode" placeholder="Код комнаты" maxlength="6" style="width:100%;padding:13px;border-radius:12px;border:1px solid #30394a;background:#0d121a;color:#fff;text-transform:uppercase;outline:0"><button class="closeNew" id="onJoin">Войти по коду</button><button class="actionBtn" id="onClose" style="width:100%;margin-top:10px">Закрыть</button>';
+    document.getElementById('onCreate').onclick=function(){createRoom(document.getElementById('onName').value).catch(function(e){toast(e.message||String(e))})};
+    document.getElementById('onJoin').onclick=function(){joinRoom(document.getElementById('onCode').value,document.getElementById('onName').value).catch(function(e){toast(e.message||String(e))})};
+    document.getElementById('onClose').onclick=closeModal;return;
+  }
+  let ev=onlineEventsHTML();
+  m.innerHTML='<div class="roomScreen"><h2>🎮 Комната · '+esc(ONLINE.room.code)+'</h2><div class="storageCard"><div class="row" style="margin:0"><div><b>👥 '+ONLINE.players.length+'/6 игроков</b><div class="muted">Ты находишься в отдельной комнате. Основная игра остаётся снаружи.</div></div><button class="actionBtn blue" id="onCopy">Скопировать</button></div></div>'+
+  '<div class="onlineRollBox"><div class="blockTitle">🎰 Прокрутка комнаты</div><div id="onlineRolling">'+(ONLINE.player&&ONLINE.player.last_plate?plate(ONLINE.player.last_plate)+info(ONLINE.player.last_plate):'<div class="empty">Готов к прокрутке.<br>Нажимай кнопку ниже.</div>')+'</div><button class="closeNew" id="onlineSpin" style="font-size:17px;padding:16px;margin-top:12px">🎰 Выбить номер — '+money(COST)+'</button></div>'+
+  '<div class="blockTitle">🏆 Рейтинг игроков</div>'+rankingHTML()+
+  '<div class="blockTitle">🎫 Последние номера</div><div class="storageCard">'+(ev||'<div class="muted">Пока никто не выбил номер.</div>')+'</div>'+
+  '<div class="blockTitle">🏪 Рынок игроков</div><div class="storageCard"><div class="muted">Здесь можно продавать номера друг другу за виртуальные ₽.</div>'+onlineMarketHTML()+'<div class="blockTitle" style="margin-top:14px">Выставить свой номер</div>'+
+  '<select id="tradePlate" class="tradeSelect">'+S.plates.map(function(p){return '<option value="'+esc(p.id)+'">'+esc(p.text)+' · '+money(p.value)+'</option>'}).join('')+'</select><input id="tradePrice" class="tradeSelect" type="number" min="1" step="1000" placeholder="Цена в виртуальных ₽"><button class="actionBtn blue" id="tradeList" style="width:100%;margin-top:8px">Выставить на рынок</button></div>'+
+  '<div class="blockTitle">💬 Чат</div><div class="storageCard"><div id="onlineChat" style="max-height:210px;overflow:auto">'+onlineChatHTML()+'</div><div style="display:flex;gap:7px;margin-top:10px"><input id="onlineChatInput" maxlength="220" placeholder="Написать сообщение…" style="flex:1;min-width:0;padding:12px;border-radius:12px;border:1px solid #30394a;background:#0d121a;color:#fff;outline:0"><button class="actionBtn blue" id="onlineChatSend">➤</button></div></div>'+
+  '<button class="actionBtn red" id="onLeave" style="width:100%;margin-top:10px">Выйти из комнаты</button><button class="actionBtn" id="onClose" style="width:100%;margin-top:8px">Свернуть лобби</button>';
+  document.getElementById('onCopy').onclick=function(){if(navigator.clipboard)navigator.clipboard.writeText(ONLINE.room.code).then(function(){toast('Код скопирован')}).catch(function(){toast('Код: '+ONLINE.room.code)});else toast('Код: '+ONLINE.room.code)};
+  document.getElementById('onlineSpin').onclick=onlineSpin;
+  document.getElementById('onlineChatSend').onclick=sendOnlineChat;
+  document.getElementById('onlineChatInput').onkeydown=function(e){if(e.key==='Enter')sendOnlineChat()};
+  document.getElementById('onLeave').onclick=leaveRoom;document.getElementById('onClose').onclick=closeModal;let tl=document.getElementById('tradeList');if(tl)tl.onclick=sendPlayerTrade;document.querySelectorAll('[data-buytrade]').forEach(function(b){b.onclick=function(){buyPlayerPlate(b.getAttribute('data-buytrade'))}});document.querySelectorAll('[data-canceltrade]').forEach(function(b){b.onclick=function(){cancelPlayerListing(b.getAttribute('data-canceltrade'))}});
+  let chat=document.getElementById('onlineChat');if(chat)chat.scrollTop=chat.scrollHeight;
+}
+async function openOnline(){
+  modal('<h2>👥 Игра с друзьями</h2><div class="muted">Подключение модуля P2P…</div>');
+  try{await loadPeerJS();renderOnline()}
+  catch(e){renderOnline();toast('Онлайн-модуль пока недоступен. Обычная игра работает.')}
+}
+async function leaveRoom(){try{if(ONLINE.host){Object.keys(ONLINE.conns).forEach(function(k){try{ONLINE.conns[k].send({type:'host-left'})}catch(e){}try{ONLINE.conns[k].close()}catch(e){}})}else if(ONLINE.hostConn){try{ONLINE.hostConn.send({type:'leave'})}catch(e){}try{ONLINE.hostConn.close()}catch(e){}}if(ONLINE.peer)ONLINE.peer.destroy()}catch(e){}ONLINE.peer=null;ONLINE.room=null;ONLINE.player=null;ONLINE.players=[];ONLINE.events=[];ONLINE.chat=[];ONLINE.market=[];ONLINE.uniqueClaims={};ONLINE.claimedKeys={};ONLINE.conns={};ONLINE.hostConn=null;ONLINE.host=false;ONLINE.spinning=false;renderOnline();toast('Ты вышел из комнаты')}
+
+
+async function syncExistingCollection(){
+  if(GLOBAL_BUSY)return; GLOBAL_BUSY=true;
+  try{
+    let changed=false;
+    for(let i=0;i<S.plates.length;i++){
+      let p=S.plates[i];
+      try{let ok=await claimGlobalPlate(p);if(!ok){S.plates.splice(i,1);i--;changed=true;}}
+      catch(e){break}
+    }
+    if(changed)save();
+  }finally{GLOBAL_BUSY=false}
+}
+
+function save(){try{localStorage.setItem('nomerok_github_v3',JSON.stringify(S))}catch(e){}updateTop()}
+function money(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function esc(s){return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+function today(){return new Date().toISOString().slice(0,10)}
+function trader(){let x=today().replace(/-/g,''),n=0;for(let i=0;i<x.length;i++)n=(n*31+x.charCodeAt(i))%TRADERS.length;return TRADERS[n]}
+function event(){let x=today().replace(/-/g,''),n=0;for(let i=0;i<x.length;i++)n=(n*17+x.charCodeAt(i))%EVENTS.length;return EVENTS[n]}
+function ensureDaily(){if(S.daily.date!==today()){S.daily={date:today(),claimed:false};save()}}
+function toast(t){let x=document.getElementById('toast');x.textContent=t;x.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(function(){x.classList.remove('show')},1700)}
+function xp(n){S.xp+=n;while(S.xp>=100){S.xp-=100;S.level++;S.keys++;toast('Новый уровень! +1 🔑')}}
+function updateTop(){document.getElementById('money').textContent=money(S.money);document.getElementById('level').textContent=S.level;document.getElementById('luck').textContent=S.luck;document.getElementById('xpbar').style.width=Math.min(100,S.xp)+'%'}
+function rarityClass(r){return {'Обычная':'r-common','Редкая':'r-rare','Эпическая':'r-epic','Легендарная':'r-legendary','Уникальная':'r-unique'}[r]||'r-common'}
+
+function findings(letters,digits,region){
+  let f=[],d=digits.join(''),dc={},lc={};
+  digits.forEach(x=>dc[x]=(dc[x]||0)+1);letters.forEach(x=>lc[x]=(lc[x]||0)+1);
+  Object.keys(dc).forEach(x=>{if(dc[x]===3)f.push(['Три '+x,18]);else if(dc[x]===2)f.push(['Две '+x,2.5])});
+  Object.keys(lc).forEach(x=>{if(lc[x]===3)f.push(['Три '+x,14]);else if(lc[x]===2)f.push(['Две '+x,2])});
+  if(d==='001')f.push(['Начальные нули',7]);if(d==='007')f.push(['Комбинация 007',10]);
+  if(d==='123'||d==='321')f.push(['Последовательность '+d,8]);
+  if(digits[0]===digits[2]&&digits[0]!==digits[1])f.push(['Зеркальные цифры',4]);
+  if(letters[0]===letters[2]&&letters[0]!==letters[1])f.push(['Зеркальные буквы',3]);
+  if(['77','97','99','177','197','199','777'].indexOf(region)>=0)f.push(['Москва',1.2]);
+  if(region.length===3)f.push(['Трёхзначный регион',1.12]);
+  return f;
+}
+const SPECIAL_PLATES=[
+  {id:'mvo231156',letters:['М','В','О'],digits:[2,3,1],region:'156',regionName:'Нижегородская область',label:'М 231 ВО · 156'},
+  {id:'rmt92756',letters:['Р','М','Т'],digits:[9,2,7],region:'56',regionName:'Оренбургская область',label:'Р 927 МТ · 56'}
+];
+function specialById(id){return SPECIAL_PLATES.find(function(x){return x.id===id})||null}
+function isSpecial(p){return !!(p&&p.specialId)}
+function specialFromTemplate(t){return {id:Date.now()+Math.random(),specialId:t.id,letters:t.letters.slice(),digits:t.digits.slice(),region:t.region,regionName:t.regionName,rarity:'Уникальная',value:2500000,findings:['Секретный экземпляр','Особый номер коллекции'],text:t.letters[0]+t.digits.join('')+t.letters[1]+t.letters[2]}}
+function showUniqueReveal(p,done){
+  let old=document.getElementById('uniqueReveal');if(old)old.remove();
+  let d=document.createElement('div');d.id='uniqueReveal';d.className='uniqueReveal';
+  d.innerHTML='<div class="urBox"><div class="urKicker">⚡ СЕКРЕТНЫЙ ЭКЗЕМПЛЯР ⚡</div><div class="urTitle">УНИКАЛЬНЫЙ НОМЕР</div><div class="urPlate">'+plate(p)+'</div><div class="specialBadge">'+esc(p.specialId==='mvo231156'?'М 231 ВО · 156':'Р 927 МТ · 56')+'</div><div class="urSub">Ты нашёл один из двух особых номеров «Номерка».<br>Экземпляр добавлен в твою коллекцию.</div><button class="urClose">Забрать в хранилище</button></div>';
+  document.body.appendChild(d);
+  d.querySelector('.urClose').onclick=function(){d.remove();if(done)done()};
+}
+function generate(){
+  if(Math.random()<0.00012){let available=SPECIAL_PLATES.filter(function(t){return !S.specialClaimed[t.id] && !(ONLINE.uniqueClaims&&ONLINE.uniqueClaims[t.id])});if(available.length)return specialFromTemplate(pick(available));}
+  let digits=[0,1,2].map(function(){return Math.floor(Math.random()*10)});
+  let letters=[0,1,2].map(function(){return pick(LETTERS)});
+  let r=pick(REGIONS),d=digits.join(''),f=findings(letters,digits,r[0]),mult=1;
+  f.forEach(x=>{mult*=x[1]});
+  let ev=event();
+  if(ev.kind==='beauty'&&['777','001','007','123','321'].indexOf(d)>=0)mult*=1.22;
+  if(ev.kind==='moscow'&&['77','97','99','177','197','199','777'].indexOf(r[0])>=0)mult*=1.2;
+  if(ev.kind==='sport'&&['007','123','321'].indexOf(d)>=0)mult*=1.15;
+  if(ev.kind==='mirror'&&(digits[0]===digits[2]||letters[0]===letters[2]))mult*=1.22;
+  let luck=S.luck-1+(S.luckBoostSpins>0?S.luckBoost:0),q=Math.random(),rarity='Обычная';
+  if(q<0.0005+luck*.00025)rarity='Уникальная';
+  else if(q<0.004+luck*.0012)rarity='Легендарная';
+  else if(q<0.035+luck*.006)rarity='Эпическая';
+  else if(q<0.16+luck*.015)rarity='Редкая';
+  let base={'Обычная':700,'Редкая':3500,'Эпическая':18000,'Легендарная':90000,'Уникальная':1000000}[rarity];
+  return {id:Date.now()+Math.random(),letters:letters,digits:digits,region:r[0],regionName:r[1],rarity:rarity,value:Math.max(100,Math.round(base*mult)),findings:f.map(function(x){return x[0]}),text:letters[0]+d+letters[1]+letters[2]};
+}
+function plate(p){
+  let L=p.letters||['А','А','А'], D=p.digits||[0,0,0];
+  let chars='<span class="pc letter">'+esc(L[0])+'</span>'+D.map(function(x){return '<span class="pc digit">'+esc(x)+'</span>'}).join('')+'<span class="pc letter">'+esc(L[1])+'</span><span class="pc letter">'+esc(L[2])+'</span>';
+  return '<div class="plateNew"><span class="plateScrew tl"></span><span class="plateScrew bl"></span><span class="plateScrew tr"></span><span class="plateScrew br"></span><div class="plateChars">'+chars+'</div><div class="plateRegion"><strong>'+esc(p.region)+'</strong><div class="rus">RUS <i class="flag"></i></div></div></div>';
+}
+function info(p){
+ return '<div class="region">Регион '+esc(p.region)+' · '+esc(p.regionName)+'</div>'+(p.specialId?'<div class="specialBadge">⚡ СЕКРЕТНЫЙ ЭКЗЕМПЛЯР</div>':'')+
+ '<div style="margin-top:7px">'+(p.findings.length?p.findings.map(function(x){return '<span class="reason">'+esc(x)+'</span>'}).join(''):'<span class="reason">обычная комбинация</span>')+'</div>'+
+ '<div class="valueBig">'+money(p.value)+'</div><span class="rarityBig '+rarityClass(p.rarity)+'">'+esc(p.rarity)+'</span>';
+}
+function spin(){
+  if(rolling||S.money<COST){
+    if(S.money<COST)toast('Недостаточно виртуальных ₽');
+    return;
+  }
+
+  // Небольшой защитный таймер: если Safari/iOS прервал анимацию,
+  // кнопки не останутся заблокированными навсегда.
+  if(window.__spinWatchdog)clearTimeout(window.__spinWatchdog);
+  window.__spinWatchdog=setTimeout(function(){
+    if(rolling){
+      rolling=false;
+      if(window.__spinTimer)clearTimeout(window.__spinTimer);
+      window.__spinTimer=null;
+      save();
+      render();
+      toast('Анимация восстановлена');
+    }
+  },12000);
+
+  S.money-=COST;
+  S.stats.spent+=COST;
+  S.stats.spins++;
+  save();
+  rolling=true;
+  render();
+
+  let n=0,total=17;
+  function tick(){
+    if(!rolling)return;
+    try{
+      let el=document.getElementById('rolling');
+      if(el){
+        let q=generate();
+        el.innerHTML=plate(q)+info(q);
+      }
+      n++;
+      if(n>=total){
+        finish();
+        return;
+      }
+      window.__spinTimer=setTimeout(tick,78+n*4);
+    }catch(err){
+      // Любая ошибка внутри анимации больше не оставляет игру в состоянии rolling=true.
+      rolling=false;
+      if(window.__spinWatchdog)clearTimeout(window.__spinWatchdog);
+      window.__spinWatchdog=null;
+      window.__spinTimer=null;
+      save();
+      render();
+      toast('Анимация восстановлена');
+      if(window.__onlineReopen){window.__onlineReopen=false;setTimeout(openOnline,180)}
+      console.error('Номерок spin:',err);
+    }
+  }
+
+  async function finish(){
+    try{
+      let p=null,claimed=false;
+      for(let attempt=0;attempt<4&&!claimed;attempt++){
+        p=generate();
+        claimed=await claimGlobalPlate(p);
+      }
+      if(!claimed){
+        S.money+=COST;
+        S.stats.spent=Math.max(0,S.stats.spent-COST);
+        S.stats.spins=Math.max(0,S.stats.spins-1);
+        save();
+        rolling=false;window.__spinTimer=null;if(window.__spinWatchdog)clearTimeout(window.__spinWatchdog);window.__spinWatchdog=null;render();
+        toast('Этот номер уже занят. ₽ возвращены.');
+        if(window.__onlineReopen){window.__onlineReopen=false;setTimeout(openOnline,180)}
+        return;
+      }
+      S.last=p;
+      S.stats.bestValue=Math.max(S.stats.bestValue,p.value);
+      if(p.value===S.stats.bestValue){
+        S.stats.bestText=p.text+' '+p.region;
+        S.stats.bestRarity=p.rarity;
+      }
+      if(!S.regions.includes(p.region))S.regions.push(p.region);
+      xp(p.rarity==='Уникальная'?45:p.rarity==='Легендарная'?32:p.rarity==='Эпическая'?20:p.rarity==='Редкая'?12:5);
+      if(S.luckBoostSpins>0){
+        S.luckBoostSpins--;
+        if(!S.luckBoostSpins)S.luckBoost=0;
+      }
+      S.plates.unshift(p);
+      S.plates=S.plates.slice(0,S.storageMax);
+      if(p.specialId)S.specialClaimed[p.specialId]=true;
+      save();
+      rolling=false;
+      window.__spinTimer=null;
+      if(window.__spinWatchdog)clearTimeout(window.__spinWatchdog);
+      window.__spinWatchdog=null;
+      render();
+      if(ONLINE.room)syncResult(p).catch(function(e){toast('Онлайн: '+(e.message||'ошибка синхронизации'))});
+      if(isSpecial(p)){showUniqueReveal(p,function(){toast('Уникальный номер добавлен в хранилище');if(window.__onlineReopen){window.__onlineReopen=false;setTimeout(openOnline,120)}})}else{toast('Номер выпал!');if(window.__onlineReopen){window.__onlineReopen=false;setTimeout(openOnline,260)}}
+    }catch(err){
+      /* Если глобальный реестр недоступен, списание не должно пропасть. */
+      S.money+=COST;
+      S.stats.spent=Math.max(0,S.stats.spent-COST);
+      S.stats.spins=Math.max(0,S.stats.spins-1);
+      rolling=false;
+      window.__spinTimer=null;
+      if(window.__spinWatchdog)clearTimeout(window.__spinWatchdog);
+      window.__spinWatchdog=null;
+      save();
+      render();
+      toast(err&&err.message?err.message:'Не удалось зарегистрировать номер. ₽ возвращены.');
+      if(window.__onlineReopen){window.__onlineReopen=false;setTimeout(openOnline,180)}
+      console.error('Номерок finish:',err);
+    }
+  }
+
+  tick();
+}
+function storeLast(){if(!S.last)return;if(S.plates.length>S.storageMax){toast('Хранилище заполнено');return}toast('Номер уже в хранилище');}
+function sellLast(){if(!S.last)return;let i=S.plates.findIndex(function(x){return x.id===S.last.id});if(i<0)return;let v=S.last.value;S.money+=v;S.stats.sold++;S.stats.earned+=v;S.plates.splice(i,1);S.last=null;save();render();toast('Продано за '+money(v))}
+function sellPlate(id){let i=S.plates.findIndex(function(x){return String(x.id)===String(id)});if(i<0)return;let p=S.plates[i];S.money+=p.value;S.stats.sold++;S.stats.earned+=p.value;S.plates.splice(i,1);if(S.last&&S.last.id===p.id)S.last=null;save();render();toast('Продано за '+money(p.value))}
+function marketMult(p){let m=1,t=trader();if(t.match(p))m=t.mult;if(p.digits.join('')==='777')m=Math.max(m,1.55);if(['001','007','123','321'].indexOf(p.digits.join(''))>=0)m=Math.max(m,1.6);return m}
+async function marketSell(id){let i=S.plates.findIndex(function(x){return String(x.id)===String(id)});if(i<0)return;let p=S.plates[i],v=Math.round(p.value*marketMult(p));if(!(await releaseGlobalPlate(p))){toast('Не удалось освободить номер в общем реестре. Продажа отменена.');return}S.money+=v;S.stats.sold++;S.stats.earned+=v;S.marketSold++;S.plates.splice(i,1);save();render();toast('NPC купил за '+money(v))}
+function openBox(i){
+  let b=BOXES[i];if(S.money<b.price){toast('Не хватает виртуальных ₽');return}if(S.cars.length>=S.garageMax){toast('Гараж заполнен');return}
+  S.money-=b.price;S.stats.spent+=b.price;let c=CARS[pick(b.ids)],car=Object.assign({},c,{id:Date.now()+Math.random()});S.cars.unshift(car);xp(i===2?30:i===1?18:10);save();modal('<h2>'+b.icon+' '+esc(b.name)+'</h2><div class="carNew"><div class="carEmoji">'+c.icon+'</div><h3>'+esc(c.name)+'</h3><div class="carMeta">'+esc(c.rarity)+' · '+esc(c.cls)+'<br>'+c.power+' л.с. · '+c.speed+' км/ч · управление '+c.handling+'</div><div style="font-size:16px;font-weight:900;margin-top:7px">'+money(c.price)+'</div></div><button class="closeNew" id="closeModal">Забрать</button>');render()
+}
+function daily(){
+  ensureDaily();if(S.daily.claimed){toast('Бонус уже получен');return}S.daily.claimed=true;S.money+=15000;S.keys++;xp(10);save();render();toast('+15 000 ₽ и +1 🔑')
+}
+function claim(id){
+  let c=COLLECTIONS.find(function(x){return x.id===id});if(!c||S.claims[id]||!c.check(S))return;S.claims[id]=true;S.money+=c.reward;if(id==='sevens'){S.luckBoost=1;S.luckBoostSpins=10}save();render();toast('Коллекция завершена!')
+}
+function setPage(p){S.page=p;save();render();window.scrollTo(0,0)}
+function setMain(m){S.main=m;save();render()}
+function modal(s){document.getElementById('modalContent').innerHTML=s;document.getElementById('modal').classList.add('show');let b=document.getElementById('closeModal');if(b)b.onclick=closeModal}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function navActive(){let map={roll:'Roll',inv:'Inv',market:'Market',boxes:'Boxes',garage:'Garage'};['roll','inv','market','boxes','garage'].forEach(function(x){document.getElementById('nav'+map[x]).classList.toggle('active',S.page===x)})}
+
+function rollView(){
+  ensureDaily();let e=event(),t=trader(),p=S.last;
+  return '<div class="eventNew"><div class="eventIconNew">'+e.icon+'</div><div><b>'+esc(e.name)+'</b><span>'+esc(e.desc)+' · Трейдер дня: '+esc(t.name)+' ×'+t.mult.toFixed(2)+'</span></div></div>'+
+  '<div class="hero"><div class="heroTitle">ТВОЙ ПОСЛЕДНИЙ НОМЕР</div><div class="balanceBig">Баланс <b>'+money(S.money)+'</b></div>'+
+  '<div id="rolling">'+(p?plate(p)+info(p):'<div class="empty">Готов к новой находке.<br>Все номера идут из одного общего случайного пула.</div>')+'</div>'+
+  (p?'<div class="two"><button class="actionBtn green" id="keepBtn">🗃️ В хранилище</button><button class="actionBtn red" id="sellLastBtn">💰 Продать</button></div>':'')+
+  '<button class="mainSpin" id="spinBtn" '+(rolling||S.money<COST?'disabled':'')+'>'+ (rolling?'Прокрутка…':'Крутить — 5 000 ₽')+'</button><div style="font-size:9px;color:#777;margin-top:6px">Валюта полностью виртуальная</div></div>'+
+  '<div class="blockTitle">Что влияет на цену</div><div class="grid2"><div class="tile"><b>🔢 Цифры</b><p>777, 001, 007, 123, 321, повторы и зеркала.</p></div><div class="tile"><b>🔤 Буквы</b><p>Одинаковые и зеркальные серии повышают ценность.</p></div><div class="tile"><b>📍 Регион</b><p>Москва и трёхзначные регионы дают дополнительный множитель.</p></div><div class="tile"><b>💎 Редкость</b><p>Обычная → Редкая → Эпическая → Легендарная → Уникальная.</p></div></div>'+
+  '<div class="blockTitle">Игра с друзьями</div><div class="storageCard"><div class="row" style="margin:0"><div><b>👥 Онлайн-комната до 6 игроков</b><div class="muted">Общий рейтинг в реальном времени</div></div><button class="actionBtn blue" id="onlineBtn">Играть вместе</button></div></div>'+'<div class="blockTitle">Ежедневный бонус</div><div class="storageCard"><div class="row" style="margin:0"><div><b>🎁 15 000 ₽ + 1 🔑</b><div class="muted">Раз в день</div></div><button class="actionBtn green" id="dailyBtn" '+(S.daily.claimed?'disabled':'')+'>'+(S.daily.claimed?'Получен':'Забрать')+'</button></div></div>';
+}
+function invView(){
+  let html='<div class="blockTitle">Хранилище · '+S.plates.length+'/'+S.storageMax+'</div>';
+  if(!S.plates.length)html+='<div class="empty">Здесь будут сохранённые номера.</div>';
+  else S.plates.forEach(function(p){html+='<div class="storageCard">'+plate(p)+info(p)+'<div class="two"><button class="actionBtn blue" data-market="'+p.id+'">🏪 Рынок · '+money(Math.round(p.value*marketMult(p)))+'</button><button class="actionBtn red" data-sell="'+p.id+'">Продать · '+money(p.value)+'</button></div></div>'});
+  html+='<div class="blockTitle">Альбом регионов · '+S.regions.length+'/'+REGIONS.length+'</div><div class="albumNew">'+REGIONS.map(function(r){return '<div class="regTile '+(S.regions.includes(r[0])?'done':'')+'"><b>'+r[0]+'</b>'+(S.regions.includes(r[0])?'✓':'?')+'</div>'}).join('')+'</div>';
+  html+='<div class="blockTitle">Коллекции</div>'+COLLECTIONS.map(function(c){let ok=c.check(S),done=!!S.claims[c.id];return '<div class="questNew"><div class="qicon">'+c.icon+'</div><div><b>'+c.name+'</b><span>'+c.desc+' · '+money(c.reward)+'</span></div><button class="'+(ok&&!done?'ok':'')+'" data-claim="'+c.id+'" '+(done||!ok?'disabled':'')+'>'+(done?'✓':ok?'Забрать':'—')+'</button></div>'}).join('');
+  return html;
+}
+function marketView(){
+  let t=trader(),html='<div class="blockTitle">Рынок</div><div class="storageCard"><b>'+t.icon+' Трейдер дня: '+esc(t.name)+'</b><div class="muted">Ищет: '+esc(t.desc)+' · множитель до ×'+t.mult.toFixed(2)+'</div></div>';
+  if(!S.plates.length)html+='<div class="empty">Нет номеров для продажи.</div>';
+  else S.plates.forEach(function(p){let v=Math.round(p.value*marketMult(p));html+='<div class="storageCard"><div class="row" style="margin:0"><b>'+esc(p.text)+'</b><span class="marketTag">×'+marketMult(p).toFixed(2)+'</span></div><div class="muted">Регион '+p.region+' · '+p.rarity+'</div><div style="font-size:17px;font-weight:900;margin-top:6px">'+money(v)+'</div><button class="actionBtn green" style="width:100%;margin-top:8px" data-market="'+p.id+'">Продать NPC</button></div>'});
+  return html;
+}
+function boxesView(){
+  return '<div class="blockTitle">Контейнеры</div><div class="muted">Автомобили выпадают только из контейнеров. Всё за виртуальные ₽.</div><div class="grid2" style="margin-top:9px">'+BOXES.map(function(b,i){return '<div class="containerNew"><div class="emoji">'+b.icon+'</div><h3>'+b.name+'</h3><p>'+b.desc+'<br>'+b.rarity+'</p><strong>'+money(b.price)+'</strong><button data-box="'+i+'" '+(S.money<b.price||S.cars.length>=S.garageMax?'disabled':'')+'>'+(S.cars.length>=S.garageMax?'Нет места':S.money<b.price?'Не хватает':'Открыть')+'</button></div>'}).join('')+'</div>';
+}
+function garageView(){
+  let html='<div class="blockTitle">Гараж · '+S.cars.length+'/'+S.garageMax+'</div>';
+  html+=S.cars.length?'<div class="grid2">'+S.cars.map(function(c){return '<div class="carNew"><div class="carEmoji">'+c.icon+'</div><h3>'+esc(c.name)+'</h3><div class="carMeta">'+esc(c.rarity)+' · '+esc(c.cls)+'<br>'+c.power+' л.с. · '+c.speed+' км/ч<br>Управление: '+c.handling+'</div><div style="font-size:14px;font-weight:900;margin-top:6px">'+money(c.price)+'</div></div>'}).join('')+'</div>':'<div class="empty">Гараж пуст.<br>Открывай контейнеры.</div>';
+  return html+'<div class="blockTitle">Все модели</div><div class="grid2">'+CARS.map(function(c){return '<div class="carNew"><div class="carEmoji">'+c.icon+'</div><h3>'+esc(c.name)+'</h3><div class="carMeta">'+c.rarity+' · '+c.cls+'<br>'+c.power+' л.с. · '+c.speed+' км/ч</div></div>'}).join('')+'</div>';
+}
+function profileView(){
+  let html='<div class="blockTitle">Профиль</div><div class="storageCard">';
+  [['Уровень',S.level],['Опыт',S.xp+'/100 XP'],['Прокруток',S.stats.spins],['Потрачено',money(S.stats.spent)],['Заработано',money(S.stats.earned)],['Продано',S.stats.sold],['Лучший номер',S.stats.bestText],['Лучшая редкость',S.stats.bestRarity]].forEach(function(x){html+='<div class="statLine"><b>'+x[0]+'</b><span>'+esc(x[1])+'</span></div>'});
+  html+='</div><div class="blockTitle">Удача</div><div class="storageCard"><div class="statLine"><b>🍀 Уровень удачи</b><span>'+S.luck+'/5</span></div><button class="actionBtn green" id="luckBtn" '+(S.luck>=5?'disabled':'')+'>Повысить за '+money([180000,450000,900000,1700000][S.luck-1]||0)+'</button></div>';
+  return html;
+}
+function render(){
+  ensureDaily();updateTop();navActive();
+  let os=document.getElementById('onlineStatus');if(os)os.innerHTML=ONLINE.room?' · <span class="onlineDot"></span> онлайн':' · <span class="onlineDot off"></span> офлайн';
+  document.getElementById('numbersTab').classList.toggle('active',S.main==='numbers');
+  document.getElementById('carsTab').classList.toggle('active',S.main==='cars');
+  let c=document.getElementById('content');
+  if(S.main==='cars'){c.innerHTML=garageView();bind();return}
+  if(S.page==='roll')c.innerHTML=rollView();
+  else if(S.page==='inv')c.innerHTML=invView();
+  else if(S.page==='market')c.innerHTML=marketView();
+  else if(S.page==='boxes')c.innerHTML=boxesView();
+  else if(S.page==='garage')c.innerHTML=garageView();
+  else c.innerHTML=profileView();
+  bind();
+}
+function bind(){
+  document.getElementById('numbersTab').onclick=function(){setMain('numbers')};
+  document.getElementById('carsTab').onclick=function(){setMain('cars')};
+  document.getElementById('navRoll').onclick=function(){setPage('roll')};
+  document.getElementById('navInv').onclick=function(){setPage('inv')};
+  document.getElementById('navMarket').onclick=function(){setPage('market')};
+  document.getElementById('navBoxes').onclick=function(){setPage('boxes')};
+  document.getElementById('navGarage').onclick=function(){setPage('garage')};
+  document.getElementById('menuBtn').onclick=function(){setPage('profile')};
+  document.getElementById('versionBtn').onclick=function(){toast('Номерок • версия GitHub')};
+  let s=document.getElementById('spinBtn');if(s)s.onclick=spin;
+  let k=document.getElementById('keepBtn');if(k)k.onclick=storeLast;
+  let sl=document.getElementById('sellLastBtn');if(sl)sl.onclick=sellLast;
+  let db=document.getElementById('dailyBtn');if(db)db.onclick=daily;
+  let ob=document.getElementById('onlineBtn');if(ob)ob.onclick=openOnline;
+  document.querySelectorAll('[data-sell]').forEach(function(b){b.onclick=function(){sellPlate(b.getAttribute('data-sell'))}});
+  document.querySelectorAll('[data-market]').forEach(function(b){b.onclick=function(){marketSell(b.getAttribute('data-market'))}});
+  document.querySelectorAll('[data-box]').forEach(function(b){b.onclick=function(){openBox(Number(b.getAttribute('data-box')))}});
+  document.querySelectorAll('[data-claim]').forEach(function(b){b.onclick=function(){claim(b.getAttribute('data-claim'))}});
+  let lb=document.getElementById('luckBtn');if(lb)lb.onclick=function(){
+    if(S.luck>=5)return;let price=[180000,450000,900000,1700000][S.luck-1];
+    if(S.money<price){toast('Не хватает виртуальных ₽');return}S.money-=price;S.luck++;save();render();toast('Удача повышена')
+  };
+}
+document.getElementById('modal').onclick=function(e){if(e.target.id==='modal')closeModal()};
+try{render();window.__nomerokReady=true}catch(e){if(window.__nomerokBootError)window.__nomerokBootError('Ошибка запуска интерфейса',e&&e.stack?e.stack:String(e));}
+
+
+/* Встроенная проверка запуска. Обычный игрок её не замечает. */
+if(new URLSearchParams(location.search).has('test')){
+  setTimeout(function(){
+    try{
+      let before=S.money;
+      document.getElementById('navInv').click();
+      document.getElementById('navMarket').click();
+      document.getElementById('navBoxes').click();
+      document.getElementById('navGarage').click();
+      document.getElementById('navRoll').click();
+      document.getElementById('spinBtn').click();
+      document.body.setAttribute('data-selftest',S.money<before?'PASS':'FAIL');
+      document.title='Номерок SELFTEST '+document.body.getAttribute('data-selftest');
+    }catch(e){
+      document.body.setAttribute('data-selftest','FAIL');
+      document.title='Номерок SELFTEST FAIL';
+    }
+  },50);
+}
+setTimeout(function(){syncExistingCollection()},1200);
+</script>
+</body>
+</html>
